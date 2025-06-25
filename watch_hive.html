@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>⌚손목에 맞는 시계 사이즈 찾기⌚</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Noto Sans KR', Helvetica, Arial, sans-serif;
+            background-color: #f2f2f2;
+            color: #5a5a5a;
+            padding: 20px;
+            margin: 0;
+        }
+        h1 {
+            color: #ffa07a;
+            font-size: 1.44em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .input-group {
+            margin: 20px 0;
+            text-align: left;
+        }
+        label {
+            font-size: 1.1em;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="number"] {
+            padding: 12px;
+            font-size: 1em;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 14px 0;
+            font-size: 1.21em;
+            font-weight: bold;
+            background-color: #ffa07a;
+            color: white;
+            border: none;
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        button:hover {
+            background-color: #e88e6d;
+        }
+        .result {
+            margin-top: 30px;
+            font-size: 1.2em;
+            color: #4a8f6a;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none;
+        }
+        .guide {
+            background-color: #fff;
+            padding: 15px;
+            margin-top: 40px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .footer {
+            margin-top: 50px;
+            font-size: 0.9em;
+            color: #999;
+            text-align: center;
+        }
+        .youtube-section {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .youtube-section iframe {
+            width: 100%;
+            height: 200px;
+            max-width: 100%;
+            border-radius: 10px;
+        }
+        @media (min-width: 600px) {
+            body {
+                max-width: 600px;
+                margin: auto;
+            }
+            .youtube-section iframe {
+                height: 315px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>손목에 맞는 시계 사이즈 찾기</h1>
+
+    <div class="input-group">
+        <label for="wristSizeCm">손목 단면 너비 (cm)를 입력하세요:</label>
+        <input type="number" id="wristSizeCm" placeholder="예: 5.5" step="0.1">
+    </div>
+
+    <button id="submitButton">추천 사이즈 보기</button>
+
+    <div class="result" id="result"></div>
+
+    <div class="guide">
+        <h3>추천 가이드</h3>
+        <ul>
+            <li>손목 위에서 케이스와 스트랩(브레이슬릿)이 가장 조화로운 비율로 노출되는 케이스와 러그 투 러그를 추천합니다</li>
+            <li>손목 단면 너비는 손목 뼈에서 1.5cm 왼쪽을 측정(왼손 기준)</li>
+            <li>케이스 사이즈는 손목 너비의 <strong>65%</strong> 내외로 추천</li>
+            <li>최대 러그 투 러그는 손목 너비의 <strong>85%</strong>를 넘지 않도록 추천</li>
+            <li>바둑알 간지를 원하시면 추천 케이스 사이즈의 <strong>최소값에 도전해 보세요</strong></li>
+            <li>세로로 긴 직사각형에 러그가 짧은 탱크형 시계는 추천 케이스 사이즈의 최소값의 -6mm 까지도 괜찮아요 </li>
+            <li>저는 손목 너비 5cm이며 27~32mm 케이스 빈티지를 즐겨 찹니다 </li>
+            <li>파네라이는 방간 맛으로 차는 시계니까 제외입니다 :) </li>
+        </ul>
+    </div>
+
+    <div class="youtube-section">
+        <h2>🔥 빈시멍 추천 영상</h2>
+        <iframe src="https://www.youtube.com/embed/DLLx-twiJqg?si=uOJQyrarwHpmqkWE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+        <h3 style="text-align: center;">🙏 유튜브 채널 시청과 구독은 콘텐츠 제작에 큰 힘이 됩니다</h3>
+    <div class="footer">
+        © 2025 Watch Hive by 빈시멍
+    </div>
+
+    <script>
+        document.getElementById('submitButton').addEventListener('click', function() {
+            const inputCm = document.getElementById('wristSizeCm').value;
+            const wristSizeCm = parseFloat(inputCm);
+
+            const resultDiv = document.getElementById('result');
+
+            if (isNaN(wristSizeCm) || wristSizeCm < 4.5 || wristSizeCm > 7.0) {
+                resultDiv.innerHTML = '⚠️ 4.5cm ~ 7.0cm 범위로 입력해주세요.';
+                resultDiv.style.display = 'block';
+                return;
+            }
+
+            const wristSizeMm = wristSizeCm * 10;
+            const caseMin = wristSizeMm * 0.65;
+            const caseMax = wristSizeMm * 0.70;
+            const lugMax = wristSizeMm * 0.85;
+
+            resultDiv.innerHTML =
+                `✅ 입력한 손목 단면 너비: <strong>${wristSizeCm.toFixed(1)}cm (${wristSizeMm.toFixed(0)}mm)</strong><br><br>` +
+                `✅ 추천 케이스 사이즈: <strong>${caseMin.toFixed(1)}mm ~ ${caseMax.toFixed(1)}mm</strong><br>` +
+                `✅ 최대 러그 투 러그: <strong>최대 ${lugMax.toFixed(1)}mm</strong>`;
+            resultDiv.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
