@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/watchhive/watchhive/my-react-app/static/css/main.e6c13ad2.css",
+    "main.js": "/watchhive/watchhive/my-react-app/static/js/main.f9db25ec.js",
+    "static/js/453.b21a91d2.chunk.js": "/watchhive/watchhive/my-react-app/static/js/453.b21a91d2.chunk.js",
+    "index.html": "/watchhive/watchhive/my-react-app/index.html",
+    "main.e6c13ad2.css.map": "/watchhive/watchhive/my-react-app/static/css/main.e6c13ad2.css.map",
+    "main.f9db25ec.js.map": "/watchhive/watchhive/my-react-app/static/js/main.f9db25ec.js.map",
+    "453.b21a91d2.chunk.js.map": "/watchhive/watchhive/my-react-app/static/js/453.b21a91d2.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.f9db25ec.js"
+  ]
+}
