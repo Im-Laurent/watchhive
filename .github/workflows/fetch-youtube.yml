@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # YOUTUBE_API_KEY Secret이 없으면 이후 단계를 조용히 스킵(실패 아님).
       # 디자인 완성 전까지 소스만 올려두고 자동화를 휴면 상태로 둘 수 있게 함.
@@ -36,9 +36,9 @@ jobs:
 
       - name: Setup Node
         if: steps.guard.outputs.active == 'true'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
