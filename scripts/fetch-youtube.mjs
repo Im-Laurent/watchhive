@@ -64,12 +64,27 @@ function deriveCategory(id, title, desc) {
   return 'Video';
 }
 
-function isShort(video) {
+// `/shorts/{id}` 는 실제 Shorts면 200, 일반 영상이면 /watch 로 3xx 리다이렉트.
+// 길이만으로는 판별 불가(YouTube Shorts는 최대 3분까지 허용되어 60초 필터를 빠져나감).
+async function isShortByUrl(id) {
+  try {
+    const res = await fetch(`https://www.youtube.com/shorts/${id}`, {
+      method: 'HEAD',
+      redirect: 'manual',
+    });
+    return res.status === 200; // 200 = Shorts, 3xx = 일반 영상
+  } catch {
+    return false; // 네트워크 실패 시 일반 영상으로 간주(과도한 필터 방지)
+  }
+}
+
+async function isShort(video) {
   const sec = parseDuration(video.contentDetails?.duration);
   const text = `${video.snippet?.title || ''} ${video.snippet?.description || ''}`.toLowerCase();
   if (text.includes('#shorts')) return true;
   if (sec > 0 && sec <= SHORTS_MAX_SEC) return true;
-  return false;
+  // 60초 초과여도 Shorts일 수 있으므로 URL 리다이렉트로 최종 판정.
+  return isShortByUrl(video.id);
 }
 
 async function main() {
@@ -104,9 +119,10 @@ async function main() {
     details.push(...(vs.items || []));
   }
 
-  // 4) Shorts 제외 + 최신순 정렬 + 상위 N개
+  // 4) Shorts 제외(URL 판정 포함) + 최신순 정렬 + 상위 N개
+  const shortFlags = await Promise.all(details.map((v) => isShort(v)));
   const videos = details
-    .filter((v) => !isShort(v))
+    .filter((_, i) => !shortFlags[i])
     .sort((a, b) => new Date(b.snippet.publishedAt) - new Date(a.snippet.publishedAt))
     .slice(0, MAX_RESULTS)
     .map((v, idx) => ({
