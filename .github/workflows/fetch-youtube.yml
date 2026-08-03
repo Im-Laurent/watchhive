@@ -1,0 +1,80 @@
+name: Fetch YouTube videos
+
+on:
+  schedule:
+    # 매일 KST 00:00 (UTC 15:00)
+    - cron: '0 15 * * *'
+  workflow_dispatch: {} # 수동 실행 허용
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fetch-youtube
+  cancel-in-progress: false
+
+jobs:
+  fetch-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # YOUTUBE_API_KEY Secret이 없으면 이후 단계를 조용히 스킵(실패 아님).
+      # 디자인 완성 전까지 소스만 올려두고 자동화를 휴면 상태로 둘 수 있게 함.
+      - name: Check secret
+        id: guard
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: |
+          if [ -z "$YOUTUBE_API_KEY" ]; then
+            echo "active=false" >> "$GITHUB_OUTPUT"
+            echo "ℹ️ YOUTUBE_API_KEY 미설정 — 스킵 (Secret 등록 시 자동 활성화)"
+          else
+            echo "active=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Node
+        if: steps.guard.outputs.active == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.guard.outputs.active == 'true'
+        run: npm ci
+
+      - name: Fetch latest videos (Shorts excluded)
+        if: steps.guard.outputs.active == 'true'
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: node scripts/fetch-youtube.mjs
+
+      - name: Commit videos.json if changed
+        id: commit
+        if: steps.guard.outputs.active == 'true'
+        run: |
+          if git diff --quiet -- public/videos.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "변경 없음"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add public/videos.json
+            git commit -m "chore: update videos.json [skip ci]"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build
+        if: steps.guard.outputs.active == 'true' && (steps.commit.outputs.changed == 'true' || github.event_name == 'workflow_dispatch')
+        run: npm run build
+
+      - name: Deploy to gh-pages
+        if: steps.guard.outputs.active == 'true' && (steps.commit.outputs.changed == 'true' || github.event_name == 'workflow_dispatch')
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          # CNAME은 public/CNAME → dist/CNAME 으로 복사되므로 도메인 유지

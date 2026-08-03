@@ -1,0 +1,25 @@
+import type { SizeRow } from './types';
+
+export const SIZE_CHART: SizeRow[] = [
+  { crossSection: 45, caseSizes: ['32mm', '33mm'], maxLugToLug: '40.5mm', circumference: '13-14cm' },
+  { crossSection: 46, caseSizes: ['33mm', '34mm'], maxLugToLug: '41.4mm', circumference: '13-14cm' },
+  { crossSection: 47, caseSizes: ['33mm', '34mm'], maxLugToLug: '42.3mm', circumference: '14-15cm' },
+  { crossSection: 48, caseSizes: ['34mm', '35mm'], maxLugToLug: '43.2mm', circumference: '14-15cm' },
+  { crossSection: 49, caseSizes: ['34mm', '35mm'], maxLugToLug: '44.1mm', circumference: '14-15cm' },
+  { crossSection: 50, caseSizes: ['35mm', '36mm'], maxLugToLug: '45.0mm', circumference: '14-15cm' },
+  { crossSection: 51, caseSizes: ['36mm', '37mm'], maxLugToLug: '45.9mm', circumference: '14-15cm' },
+  { crossSection: 52, caseSizes: ['36mm', '37mm'], maxLugToLug: '46.8mm', circumference: '15-16cm' },
+  { crossSection: 53, caseSizes: ['37mm', '38mm'], maxLugToLug: '47.7mm', circumference: '15-16cm' },
+  { crossSection: 54, caseSizes: ['37mm', '38mm'], maxLugToLug: '48.6mm', circumference: '15-16cm' },
+  { crossSection: 55, caseSizes: ['38mm', '39mm'], maxLugToLug: '49.5mm', circumference: '16-17cm' },
+  { crossSection: 56, caseSizes: ['39mm', '40mm'], maxLugToLug: '50.4mm', circumference: '16-17cm' },
+  { crossSection: 57, caseSizes: ['39mm', '40mm'], maxLugToLug: '51.3mm', circumference: '17-18cm' },
+  { crossSection: 58, caseSizes: ['40mm', '41mm'], maxLugToLug: '52.2mm', circumference: '17-18cm' },
+  { crossSection: 59, caseSizes: ['41mm', '42mm'], maxLugToLug: '53.1mm', circumference: '17-18cm' },
+  { crossSection: 60, caseSizes: ['41mm', '42mm'], maxLugToLug: '54.0mm', circumference: '18-19cm' },
+  { crossSection: 61, caseSizes: ['42mm', '43mm'], maxLugToLug: '54.9mm', circumference: '18-19cm' },
+  { crossSection: 62, caseSizes: ['43mm', '44mm'], maxLugToLug: '55.8mm', circumference: '18-19cm' },
+  { crossSection: 63, caseSizes: ['44mm', '45mm'], maxLugToLug: '56.7mm', circumference: '19-20cm' },
+  { crossSection: 64, caseSizes: ['44mm', '45mm'], maxLugToLug: '57.6mm', circumference: '19-20cm' },
+  { crossSection: 65, caseSizes: ['45mm', '46mm'], maxLugToLug: '58.5mm', circumference: '19-20cm' },
+];
