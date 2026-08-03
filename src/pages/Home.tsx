@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import PageHead from '../components/PageHead';
 import { useShare } from '../hooks/useShare';
-import { useVideos } from '../hooks/useVideos';
+import { FEATURED_VIDEO } from '../data/featured';
 
 const SERVICES = [
   { to: '/videos', title: 'Videos', desc: '빈티지 시계 리뷰와 시계 헌팅 영상', img: '/images/videos_img.jpg' },
@@ -12,8 +12,7 @@ const SERVICES = [
 export default function Home() {
   const navigate = useNavigate();
   const { handleShare, shareMessage } = useShare();
-  const { videos } = useVideos();
-  const featured = videos[0];
+  const featured = FEATURED_VIDEO;
 
   return (
     <>
