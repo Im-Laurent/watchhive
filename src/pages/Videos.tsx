@@ -21,9 +21,18 @@ export default function Videos() {
                 <a href={`https://www.youtube.com/watch?v=${video.youtubeId}`} target="_blank" rel="noopener noreferrer" className="group">
                   <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
                     <img
-                      src={video.thumbnail || `https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
+                      src={`https://i.ytimg.com/vi/${video.youtubeId}/maxresdefault.jpg`}
                       alt={video.title}
                       loading="lazy"
+                      onError={(e) => {
+                        // maxres(1280x720)가 없는 영상은 hq → mq 순으로 폴백
+                        const img = e.currentTarget;
+                        if (img.src.includes('maxresdefault')) {
+                          img.src = `https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg`;
+                        } else if (img.src.includes('hqdefault')) {
+                          img.src = `https://i.ytimg.com/vi/${video.youtubeId}/mqdefault.jpg`;
+                        }
+                      }}
                       className="absolute top-0 left-0 w-full h-full object-cover rounded-t-lg"
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">

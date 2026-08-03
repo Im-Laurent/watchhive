@@ -47,21 +47,19 @@ function parseDuration(iso) {
   return (Number(h) || 0) * 3600 + (Number(mn) || 0) * 60 + (Number(s) || 0);
 }
 
-// 기존에 손으로 분류해 둔 카테고리 (알고 있는 영상은 유지)
-const KNOWN_CATEGORY = {
-  vLLYrPZsUH4: 'Watch Hunting', srdbxEj2MEE: 'Watch Hunting', s7JMpyDsJJQ: 'Watch Hunting',
-  DLLx: 'Watch Hunting', 'Y--ywZkwQX4': 'Watch Hunting', p3zrB9EPpNY: 'Insight',
-  'F1-qHczSpL0': 'My Watch Collection', 'xY1LA-Y7O9s': 'Tips', Ap5p3d3RO7E: 'Tips',
-};
+// 카테고리는 'Watch Hunting' 과 'Review' 두 가지만 사용한다.
+// 워치헌팅(시장·거리에서 직접 사러 다니는 영상)이 아니면 전부 'Review'.
+const KNOWN_HUNTING = new Set([
+  'vLLYrPZsUH4', 'srdbxEj2MEE', 's7JMpyDsJJQ', 'DLLx-twiJqg', 'Y--ywZkwQX4',
+]);
 
 function deriveCategory(id, title, desc) {
-  if (KNOWN_CATEGORY[id]) return KNOWN_CATEGORY[id];
+  if (KNOWN_HUNTING.has(id)) return 'Watch Hunting';
   const t = `${title} ${desc}`.toLowerCase();
-  if (/(헌팅|hunting|사러|시장|아메요코|긴자|나카노)/.test(t)) return 'Watch Hunting';
-  if (/(리뷰|review|스펙|단점)/.test(t)) return 'Review';
-  if (/(사이즈|생산년도|시리얼|이렇게|방법|tip)/.test(t)) return 'Tips';
-  if (/(컬렉션|collection|내 시계)/.test(t)) return 'My Watch Collection';
-  return 'Video';
+  if (/(헌팅|hunting|사러|시장|아메요코|긴자|나카노|우에노|동묘|종로|예지동|시계여행|줍줍|쇼핑)/.test(t)) {
+    return 'Watch Hunting';
+  }
+  return 'Review';
 }
 
 // `/shorts/{id}` 는 실제 Shorts면 200, 일반 영상이면 /watch 로 3xx 리다이렉트.
@@ -133,8 +131,9 @@ async function main() {
       category: deriveCategory(v.id, v.snippet.title, v.snippet.description),
       publishedAt: v.snippet.publishedAt,
       thumbnail:
-        v.snippet.thumbnails?.medium?.url ||
-        `https://i.ytimg.com/vi/${v.id}/mqdefault.jpg`,
+        v.snippet.thumbnails?.maxres?.url ||
+        v.snippet.thumbnails?.high?.url ||
+        `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`,
     }));
 
   if (videos.length === 0) throw new Error('Shorts 제외 후 남은 영상이 없습니다.');
