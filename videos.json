@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-08-04T00:00:00.000Z",
+  "updatedAt": "2026-08-04T16:49:22.961Z",
   "channelId": "UC9YPdU50ZuFvqLnxw0HYmGA",
-  "count": 13,
+  "count": 12,
   "videos": [
     {
       "id": 1,
@@ -41,75 +41,75 @@
     },
     {
       "id": 5,
-      "youtubeId": "vLLYrPZsUH4",
-      "title": "도쿄 우에노. 일본 빈티지 시계 천국, 직접 가봤습니다",
-      "description": "우에노 아메요코 시장의 빈티지 시계점들과 즐길 거리들을 소개합니다.",
+      "youtubeId": "O23W4NKI2uI",
+      "title": "카리나 시계 까르띠에 탱크루이 아니라니까 사실은..",
+      "description": "빈티지 시계 덕후가 말아서 떠먹여주는",
       "category": "Watch Hunting",
-      "thumbnail": "https://i.ytimg.com/vi/vLLYrPZsUH4/maxresdefault.jpg"
+      "publishedAt": "2026-03-20T23:00:00Z",
+      "thumbnail": "https://i.ytimg.com/vi/O23W4NKI2uI/maxresdefault.jpg"
     },
     {
       "id": 6,
-      "youtubeId": "srdbxEj2MEE",
-      "title": "도쿄 긴자. 빈티지 시계 쇼핑의 모든 것. 완벽 코스 가이드",
-      "description": "도쿄 긴자의 빈티지 시계점 5선과 즐길 거리를 다룬 영상.",
+      "youtubeId": "ISnUWSsiAFI",
+      "title": "두쫀쿠 40번 참으면 시계 사는 이곳. 상하이 빈티지쇼핑 직접 가봤습니다.",
+      "description": "상하이 시계여행 빈티지편🏮",
       "category": "Watch Hunting",
-      "thumbnail": "https://i.ytimg.com/vi/srdbxEj2MEE/maxresdefault.jpg"
+      "publishedAt": "2026-02-13T23:00:00Z",
+      "thumbnail": "https://i.ytimg.com/vi/ISnUWSsiAFI/maxresdefault.jpg"
     },
     {
       "id": 7,
-      "youtubeId": "s7JMpyDsJJQ",
-      "title": "도쿄 긴자. 진짜 일본 부자들이 시계 사는곳 가봤는데요. 미쳤습니다",
-      "description": "평당 18억. 일본에서 가장 비싼 땅에 세이코 하우스가 있는 이유.",
+      "youtubeId": "Uc1-MRx1SwY",
+      "title": "상하이 시계 여행. '이것'만 알아도 성공입니다.",
+      "description": "🏮상하이 시계여행 와이탄편🏮",
       "category": "Watch Hunting",
-      "thumbnail": "https://i.ytimg.com/vi/s7JMpyDsJJQ/maxresdefault.jpg"
+      "publishedAt": "2026-01-23T22:00:00Z",
+      "thumbnail": "https://i.ytimg.com/vi/Uc1-MRx1SwY/maxresdefault.jpg"
     },
     {
       "id": 8,
-      "youtubeId": "DLLx-twiJqg",
-      "title": "도쿄 나카노. 일본서 시계 살거면 그냥 여기 가세요",
-      "description": "일본 빈티지 시계의 성지 나카노를 처음 방문하신다면 꼭 봐야 할 영상입니다.",
-      "category": "Watch Hunting",
-      "thumbnail": "https://i.ytimg.com/vi/DLLx-twiJqg/maxresdefault.jpg"
+      "youtubeId": "F1-qHczSpL0",
+      "title": "세이코 로토콜. 우주와 심해를 모두 정복한 단 하나의 시계. SMGG19",
+      "description": "🛰️무려 3,200만원에 낙찰된 세이코 전자시계의 숨겨진 이야기🚀",
+      "category": "Review",
+      "publishedAt": "2025-12-19T22:00:00Z",
+      "thumbnail": "https://i.ytimg.com/vi/F1-qHczSpL0/maxresdefault.jpg"
     },
     {
       "id": 9,
-      "youtubeId": "Y--ywZkwQX4",
-      "title": "요즘 해외에서 난리난 교토 시계여행 코스 도대체 뭐길래?",
-      "description": "교토에서 무슨 시계여행이냐고요? 교토 브랜드 KUOE와 시계탐방 동선을 소개합니다.",
+      "youtubeId": "vLLYrPZsUH4",
+      "title": "도쿄 우에노. 일본 빈티지 시계 천국, 직접 가봤습니다",
+      "description": "🗼일본 도쿄 시계여행 우에노 빈티지편🗼",
       "category": "Watch Hunting",
-      "thumbnail": "https://i.ytimg.com/vi/Y--ywZkwQX4/maxresdefault.jpg"
+      "publishedAt": "2025-11-06T22:30:14Z",
+      "thumbnail": "https://i.ytimg.com/vi/vLLYrPZsUH4/maxresdefault.jpg"
     },
     {
       "id": 10,
-      "youtubeId": "p3zrB9EPpNY",
-      "title": "인도네시아 발리. 한국에선 상상 못할 발리의 시계",
-      "description": "발리의 충격적인 시계점과, 빈티지 시계점, 즐길거리를 다룬 영상",
-      "category": "Review",
-      "thumbnail": "https://i.ytimg.com/vi/p3zrB9EPpNY/maxresdefault.jpg"
+      "youtubeId": "srdbxEj2MEE",
+      "title": "도쿄 긴자. 빈티지 시계 쇼핑의 모든 것. 완벽 코스 가이드",
+      "description": "🗼일본 도쿄 시계여행 긴자 빈티지편🗼",
+      "category": "Watch Hunting",
+      "publishedAt": "2025-10-10T23:01:04Z",
+      "thumbnail": "https://i.ytimg.com/vi/srdbxEj2MEE/maxresdefault.jpg"
     },
     {
       "id": 11,
-      "youtubeId": "F1-qHczSpL0",
-      "title": "세이코 로토콜. 우주와 심해를 모두 정복한 단 하나의 시계",
-      "description": "무려 3,200만원에 낙찰된 세이코 전자시계의 숨겨진 이야기.",
-      "category": "Review",
-      "thumbnail": "https://i.ytimg.com/vi/F1-qHczSpL0/maxresdefault.jpg"
+      "youtubeId": "p3zrB9EPpNY",
+      "title": "인도네시아 발리. 한국에선 상상 못할 발리의 시계. 이건 진짜 예상 못했다",
+      "description": "✈️인도네시아 시계여행 발리편✈️",
+      "category": "Watch Hunting",
+      "publishedAt": "2025-09-23T22:01:05Z",
+      "thumbnail": "https://i.ytimg.com/vi/p3zrB9EPpNY/maxresdefault.jpg"
     },
     {
       "id": 12,
       "youtubeId": "xY1LA-Y7O9s",
       "title": "조용히 가격 상승 중인 나만 알고 싶은 시계. 론진 옥타곤 3209 빈티지",
-      "description": "빈티지 론진 옥타곤 3209에 대한 가격, 디자인, 스펙, 단점 리뷰",
+      "description": "빈티지 씬에서 주목 받으며 조용히 가격 상승 중인 나만 알고 싶은 시계.",
       "category": "Review",
+      "publishedAt": "2025-08-06T22:01:14Z",
       "thumbnail": "https://i.ytimg.com/vi/xY1LA-Y7O9s/maxresdefault.jpg"
-    },
-    {
-      "id": 13,
-      "youtubeId": "Ap5p3d3RO7E",
-      "title": "빈티지 시계 사이즈는 이렇게 차세요",
-      "description": "시계 사이즈와 생산년도를 찾아주는 서비스를 만들었습니다.",
-      "category": "Review",
-      "thumbnail": "https://i.ytimg.com/vi/Ap5p3d3RO7E/maxresdefault.jpg"
     }
   ]
 }
