@@ -192,7 +192,12 @@ export default function YearFinder() {
                     <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{blk.answer}</p>
                   </div>
                 ))}
-                <img src={currentGuide.imageUrl} alt={`${displayName(brand)} 가이드`} className="max-w-full h-auto rounded-lg mt-2" />
+                <img
+                  src={currentGuide.imageUrl}
+                  alt={`${displayName(brand)} 가이드`}
+                  className="max-w-full h-auto rounded-lg mt-2"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
               </div>
             </div>
           )}
