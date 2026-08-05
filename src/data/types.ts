@@ -36,4 +36,4 @@ export type VideosPayload = {
   videos: Video[];
 };
 
-export type BrandKey = 'Omega' | 'Rolex' | 'IWC' | 'Longines' | 'UniversalGenève';
+export type BrandKey = 'Omega' | 'Rolex' | 'IWC' | 'Longines' | 'UniversalGenève' | 'Seiko';

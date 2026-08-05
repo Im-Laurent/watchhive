@@ -8,6 +8,7 @@ import { LONGINES_SERIALS } from '../data/serials/longines';
 import { UG_SERIALS } from '../data/serials/ug';
 import { WATCH_HISTORY, KOREAN_HISTORY } from '../data/history';
 import { BRAND_GUIDES } from '../data/brandGuides';
+import SeikoYearFinder from '../components/SeikoYearFinder';
 
 type LookupResult = {
   year: string;
@@ -22,9 +23,13 @@ const YEAR_RANGE: Record<string, string> = {
   IWC: '1884–1975',
   Longines: '1867–1969',
   UniversalGenève: '1930–1967',
+  Seiko: '1966+ 추정',
 };
 
 const displayName = (brand: string) => (brand === 'UniversalGenève' ? 'Universal Genève' : brand);
+
+// 브랜드 카드 목록: 시리얼 테이블 브랜드(BRAND_GUIDES) + Seiko(시리얼×칼리버 별도 조회)
+const BRAND_CARDS = [...Object.keys(BRAND_GUIDES), 'Seiko'];
 
 export default function YearFinder() {
   const [brand, setBrand] = useState('');
@@ -102,7 +107,7 @@ export default function YearFinder() {
     <>
       <PageHead
         title="Year Finder"
-        description="브랜드와 시리얼 번호로 빈티지 시계의 생산년도를 조회합니다. Rolex, Omega, IWC, Longines, Universal Genève 지원."
+        description="브랜드와 시리얼 번호로 빈티지 시계의 생산년도를 조회합니다. Rolex, Omega, IWC, Longines, Universal Genève, Seiko 지원."
         path="/year-finder"
       />
       <main className="container mx-auto mt-8 px-6 md:px-12 py-8 max-w-3xl">
@@ -116,7 +121,7 @@ export default function YearFinder() {
             <span className="text-lg font-bold text-gray-800">브랜드 선택</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {Object.keys(BRAND_GUIDES).map((b) => {
+            {BRAND_CARDS.map((b) => {
               const on = brand === b;
               return (
                 <button
@@ -134,8 +139,11 @@ export default function YearFinder() {
             })}
           </div>
 
-          {/* Step 2: serial input */}
-          {brand && (
+          {/* Seiko: 시리얼×칼리버 별도 조회 */}
+          {brand === 'Seiko' && <SeikoYearFinder />}
+
+          {/* Step 2: serial input (시리얼 테이블 브랜드) */}
+          {brand && brand !== 'Seiko' && (
             <div className="mt-8">
               <div className="flex items-center gap-2 mb-3">
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-800 text-white text-sm font-bold">2</span>
