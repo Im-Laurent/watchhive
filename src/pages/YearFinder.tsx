@@ -6,14 +6,15 @@ import { ROLEX_SERIALS } from '../data/serials/rolex';
 import { IWC_SERIALS } from '../data/serials/iwc';
 import { LONGINES_SERIALS } from '../data/serials/longines';
 import { UG_SERIALS } from '../data/serials/ug';
-import { WATCH_HISTORY, KOREAN_HISTORY } from '../data/history';
+import { WATCH_HISTORY } from '../data/history';
 import { BRAND_GUIDES } from '../data/brandGuides';
 import SeikoYearFinder from '../components/SeikoYearFinder';
+import KoreanYearNews from '../components/KoreanYearNews';
 
 type LookupResult = {
   year: string;
+  yearNum: number;
   wFact: typeof WATCH_HISTORY;
-  kFact: typeof KOREAN_HISTORY;
 };
 
 // 브랜드별 지원 연도 범위 (배지·안내용)
@@ -85,8 +86,8 @@ export default function YearFinder() {
       const yr = parseInt(yearText);
       setRes({
         year: yearText,
+        yearNum: yr,
         wFact: WATCH_HISTORY.filter((f) => f.brand === brand && Math.abs(f.year - yr) <= 2).slice(0, 2),
-        kFact: KOREAN_HISTORY.filter((f) => Math.abs(f.year - yr) <= 2).slice(0, 2),
       });
       setTimeout(() => resultRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } else {
@@ -176,12 +177,7 @@ export default function YearFinder() {
                         <ul className="list-disc list-inside space-y-1 text-gray-600 text-sm">{res.wFact.map((f, i) => <li key={i}>{f.fact}</li>)}</ul>
                       </div>
                     )}
-                    {res.kFact.length > 0 && (
-                      <div className="text-left bg-white rounded-xl p-4 shadow-sm">
-                        <p className="font-bold text-gray-700 mb-2">🇰🇷 그 시절 한국은</p>
-                        <ul className="list-disc list-inside space-y-1 text-gray-600 text-sm">{res.kFact.map((f, i) => <li key={i}>{f.fact}</li>)}</ul>
-                      </div>
-                    )}
+                    <KoreanYearNews year={res.yearNum} />
                   </div>
                 </div>
               )}

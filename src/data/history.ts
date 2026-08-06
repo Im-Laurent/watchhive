@@ -1,4 +1,4 @@
-import type { WatchHistoryItem, KoreanHistoryItem } from './types';
+import type { WatchHistoryItem } from './types';
 
 export const WATCH_HISTORY: WatchHistoryItem[] = [
   { brand: 'Rolex', year: 1945, fact: '롤렉스, 데이트저스트(Datejust) 출시.' },
@@ -7,13 +7,4 @@ export const WATCH_HISTORY: WatchHistoryItem[] = [
   { brand: 'Omega', year: 1948, fact: '오메가 씨마스터(Seamaster) 라인 최초 출시.' },
   { brand: 'Omega', year: 1957, fact: '오메가 스피드마스터(Speedmaster), 씨마스터 300, 레일마스터 출시.' },
   { brand: 'Omega', year: 1969, fact: '오메가 스피드마스터, 아폴로 11호와 함께 달 착륙.' },
-];
-
-export const KOREAN_HISTORY: KoreanHistoryItem[] = [
-  { year: 1945, fact: '대한민국 광복.' },
-  { year: 1948, fact: '대한민국 정부 수립.' },
-  { year: 1950, fact: '한국 전쟁 발발.' },
-  { year: 1960, fact: '4.19 혁명 발생, 이승만 대통령 하야.' },
-  { year: 1970, fact: '새마을운동 시작.' },
-  { year: 1988, fact: '서울 올림픽 개최.' },
 ];

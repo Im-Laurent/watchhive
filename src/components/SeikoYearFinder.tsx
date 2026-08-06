@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { SEIKO_CALIBERS, type SeikoCaliberRange } from '../data/seikoCalibers';
+import KoreanYearNews from './KoreanYearNews';
 
 const MONTHS: Record<number, string> = {
   1: '1월', 2: '2월', 3: '3월', 4: '4월', 5: '5월', 6: '6월',
@@ -138,6 +139,7 @@ export default function SeikoYearFinder() {
               <p className="text-sm text-gray-600">{res.monthLabel} 생산 · 칼리버 {res.caliber} ({spanTxt(res.range)})로 확정</p>
               <p className="text-xs text-gray-400 mt-1">그 달의 생산 일련번호: {res.prod}</p>
             </div>
+            <KoreanYearNews year={res.year} />
           </div>
         )}
 

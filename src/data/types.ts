@@ -15,7 +15,6 @@ export type SizeRow = {
 };
 
 export type WatchHistoryItem = { brand: string; year: number; fact: string };
-export type KoreanHistoryItem = { year: number; fact: string };
 
 export type BrandGuide = { title: string; imageUrl: string; description: string };
 
