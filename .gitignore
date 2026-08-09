@@ -12,7 +12,8 @@ dist
 dist-ssr
 *.local
 
-# Vintage Maps: 개인 저장 장소(Takeout) 원본 & 어드민 후보 데이터는 배포/커밋하지 않음
+# Vintage Maps 는 저장소에서 제거했지만(되돌림 커밋), 개인 위치기록(Takeout) 원본과
+# 후보 데이터가 로컬에 남아 있다. 실수로 커밋되지 않도록 무시 규칙은 유지한다.
 takeout/
 public/places.candidates.json
 

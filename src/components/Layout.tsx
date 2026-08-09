@@ -11,12 +11,9 @@ const NAV_LEFT = [
   { to: '/year-finder', label: 'Year Finder', end: false },
   { to: '/fit-finder', label: 'Fit Finder', end: false },
 ];
-// Vintage Maps 는 개발 전용(App.tsx 의 라우트 가드와 짝). 프로덕션 빌드에서는
-// import.meta.env.DEV 가 false 로 치환되어 메뉴·푸터 어디에도 노출되지 않는다.
 const NAV_RIGHT = [
   { to: '/about-me', label: 'About Me', end: false },
   { to: '/videos', label: 'Videos', end: false },
-  ...(import.meta.env.DEV ? [{ to: '/vintage-maps', label: 'Vintage Maps', end: false }] : []),
 ];
 // 모바일 메뉴·푸터처럼 한 줄로 늘어놓는 곳
 const NAV = [...NAV_LEFT, ...NAV_RIGHT];
