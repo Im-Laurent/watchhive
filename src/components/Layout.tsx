@@ -3,11 +3,14 @@ import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useAnalyticsPageview } from '../hooks/useAnalyticsPageview';
 import { useClipboard } from '../hooks/useClipboard';
 
+// Vintage Maps 는 개발 전용(App.tsx 의 라우트 가드와 짝). 프로덕션 빌드에서는
+// import.meta.env.DEV 가 false 로 치환되어 메뉴·푸터 어디에도 노출되지 않는다.
 const NAV = [
   { to: '/', label: 'Home', end: true },
-  { to: '/videos', label: 'Videos', end: false },
-  { to: '/fit-finder', label: 'Fit Finder', end: false },
   { to: '/year-finder', label: 'Year Finder', end: false },
+  { to: '/fit-finder', label: 'Fit Finder', end: false },
+  { to: '/videos', label: 'Videos', end: false },
+  ...(import.meta.env.DEV ? [{ to: '/vintage-maps', label: 'Vintage Maps', end: false }] : []),
   { to: '/about-me', label: 'About Me', end: false },
 ];
 
