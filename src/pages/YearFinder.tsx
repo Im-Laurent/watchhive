@@ -10,6 +10,7 @@ import { WATCH_HISTORY } from '../data/history';
 import { BRAND_GUIDES } from '../data/brandGuides';
 import SeikoYearFinder from '../components/SeikoYearFinder';
 import KoreanYearNews from '../components/KoreanYearNews';
+import PageHero from '../components/PageHero';
 
 type LookupResult = {
   year: string;
@@ -111,10 +112,13 @@ export default function YearFinder() {
         description="브랜드와 시리얼 번호로 빈티지 시계의 생산년도를 조회합니다. Rolex, Omega, IWC, Longines, Universal Genève, Seiko 지원."
         path="/year-finder"
       />
+      <PageHero
+        title="Year Finder"
+        subtitle="시리얼 넘버로 빈티지 시계의 생산년도를 조회해 보세요"
+        imgBase="year_finder_hero"
+        alt="빨간 까르띠에 박스와 책 위에 놓인 빈티지 까르띠에 시계 세 점"
+      />
       <main className="container mx-auto mt-8 px-6 md:px-12 py-8 max-w-3xl">
-        <h1 className="text-4xl font-bold text-gray-800 mb-2 text-center mt-4 md:mt-8">Year Finder</h1>
-        <p className="text-gray-500 text-center mb-8">시리얼 넘버로 빈티지 시계의 생산년도를 조회해 보세요</p>
-
         <div className="bg-white rounded-2xl shadow-md p-6 md:p-8 mb-8">
           {/* Step 1: brand cards */}
           <div className="flex items-center gap-2 mb-3">

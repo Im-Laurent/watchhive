@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import PageHead from '../components/PageHead';
 import { useShare } from '../hooks/useShare';
 import { SIZE_CHART } from '../data/sizeChart';
+import PageHero from '../components/PageHero';
 
 type WatchType = 'dress-watch' | 'tool-watch' | 'generous-fit';
 type Result = { recCase: string; recLug: string; caseMax: number; wrist: number; type: WatchType };
@@ -88,10 +89,13 @@ export default function FitFinder() {
         description="손목 단면 너비로 나에게 어울리는 시계 케이스·러그 사이즈를 계산합니다."
         path="/fit-finder"
       />
+      <PageHero
+        title="Fit Finder"
+        subtitle="손목에 가장 조화로운 케이스·러그 사이즈를 찾아보세요"
+        imgBase="fit_finder_hero"
+        alt="가죽 위에 나란히 놓인 빈티지 시계 여섯 점 — 케이스 크기와 형태가 저마다 다르다"
+      />
       <main className="container mx-auto mt-8 px-6 md:px-12 py-8 max-w-3xl">
-        <h1 className="text-4xl font-bold text-gray-800 mb-2 text-center mt-4 md:mt-8">Fit Finder</h1>
-        <p className="text-gray-500 text-center mb-8">손목에 가장 조화로운 케이스·러그 사이즈를 찾아보세요</p>
-
         <div className="bg-white rounded-2xl shadow-md p-6 md:p-8 mb-8">
           {/* Step 1: watch type cards */}
           <div className="mb-8">

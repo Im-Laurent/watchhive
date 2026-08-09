@@ -12,6 +12,29 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Year Finder · Fit Finder 상단 명판 (FinderHero) */
+.wh-hero {
+  position: relative;
+  overflow: hidden;
+  background: #1a1815;
+  height: clamp(250px, 30vw, 360px);
+}
+.wh-hero__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* 제목이 앉는 왼쪽 아래가 가장 어둡고, 사진 윗부분은 거의 그대로 보이는 딤 */
+.wh-hero__scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(16, 14, 12, 0.88) 0%, rgba(16, 14, 12, 0.6) 30%, rgba(16, 14, 12, 0.1) 62%, rgba(16, 14, 12, 0.3) 100%),
+    linear-gradient(to right, rgba(16, 14, 12, 0.55) 0%, rgba(16, 14, 12, 0) 58%);
+}
+
 /* Fit Finder wrist slider */
 .fit-slider {
   -webkit-appearance: none;
