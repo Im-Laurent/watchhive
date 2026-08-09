@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Vintage Maps: 개인 저장 장소(Takeout) 원본 & 어드민 후보 데이터는 배포/커밋하지 않음
+takeout/
+public/places.candidates.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
