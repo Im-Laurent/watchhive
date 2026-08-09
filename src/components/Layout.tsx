@@ -37,8 +37,8 @@ export default function Layout() {
       <header className="bg-white shadow-sm py-4 px-6 md:px-12">
         {/* 모바일은 [Watch HIVE ... 햄버거], 데스크톱은 가운데 열이 Watch HIVE 인 3열.
             양쪽 1fr 이 같은 폭이라 Watch HIVE 가 화면 정중앙에 온다. */}
-        <div className="container mx-auto flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] md:gap-8">
-          <nav className="hidden md:flex justify-end items-center space-x-8">
+        <div className="container mx-auto flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] md:gap-8 lg:gap-16 xl:gap-20">
+          <nav className="hidden md:flex justify-end items-center space-x-8 lg:space-x-12">
             {NAV_LEFT.map((item) => (
               <NavLink key={item.to} to={item.to} end={item.end} className={navLinkClass}>
                 {item.label}
@@ -56,7 +56,7 @@ export default function Layout() {
             {HOME.label}
           </NavLink>
 
-          <nav className="hidden md:flex justify-start items-center space-x-8">
+          <nav className="hidden md:flex justify-start items-center space-x-8 lg:space-x-12">
             {NAV_RIGHT.map((item) => (
               <NavLink key={item.to} to={item.to} end={item.end} className={navLinkClass}>
                 {item.label}
