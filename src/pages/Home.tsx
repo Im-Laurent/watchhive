@@ -33,12 +33,14 @@ export default function Home() {
 
         <section className="mb-12 px-6 md:px-12 mt-12">
           <h3 className="text-3xl font-bold text-gray-800 mb-8 text-center">제공 서비스</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* 카드는 가로로 긴 4:3. 폭이 좁아 4:3 높이로는 제목·설명이 안 들어가는
+              구간이 있어 최소 높이를 함께 둔다. 3단은 카드가 넉넉해지는 lg 부터. */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {SERVICES.map((s) => (
               <div
                 key={s.to}
                 onClick={() => navigate(s.to)}
-                className="bg-gray-800 rounded-lg shadow-lg flex flex-col items-center text-center cursor-pointer hover:bg-gray-700 transition duration-300 relative aspect-square group overflow-hidden"
+                className="bg-gray-800 rounded-lg shadow-lg flex flex-col items-center text-center cursor-pointer hover:bg-gray-700 transition duration-300 relative w-full aspect-[4/3] min-h-[16rem] group overflow-hidden"
               >
                 <div className="absolute inset-0 w-full h-full" style={{ backgroundImage: `url(${s.img})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.3 }}></div>
                 <div className="relative z-10 flex flex-col items-center justify-center h-full w-full p-8">
