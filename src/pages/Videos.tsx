@@ -1,5 +1,6 @@
 import PageHead from '../components/PageHead';
 import { useVideos } from '../hooks/useVideos';
+import PageHero from '../components/PageHero';
 
 export default function Videos() {
   const { videos } = useVideos();
@@ -11,8 +12,13 @@ export default function Videos() {
         description="빈시멍 유튜브 채널의 최신 영상. 빈티지 시계 리뷰와 시계 헌팅 영상 모음."
         path="/videos"
       />
+      <PageHero
+        title="Videos"
+        subtitle="빈티지 시계 리뷰와 시계 헌팅 영상"
+        imgBase="videos_hero"
+        alt="베이지색 바탕에 나란히 놓인 가죽 시계 스트랩 여러 개"
+      />
       <main className="container mx-auto mt-8 px-6 md:px-12 py-8">
-        <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center mt-4 md:mt-8">Videos</h1>
         <section>
           <h3 className="text-2xl font-bold text-gray-800 mb-6">Latest Videos</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
