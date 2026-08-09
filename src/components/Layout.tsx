@@ -3,16 +3,26 @@ import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useAnalyticsPageview } from '../hooks/useAnalyticsPageview';
 import { useClipboard } from '../hooks/useClipboard';
 
-// Vintage Maps 는 개발 전용(App.tsx 의 라우트 가드와 짝). 프로덕션 빌드에서는
-// import.meta.env.DEV 가 false 로 치환되어 메뉴·푸터 어디에도 노출되지 않는다.
-const NAV = [
-  { to: '/', label: 'Home', end: true },
+// Home 메뉴는 따로 두지 않고 가운데의 Watch HIVE 가 그 자리를 대신한다.
+const HOME = { to: '/', label: 'Watch HIVE', end: true };
+
+// 데스크톱 헤더는 [왼쪽 메뉴] Watch HIVE [오른쪽 메뉴] 로 나뉜다.
+const NAV_LEFT = [
   { to: '/year-finder', label: 'Year Finder', end: false },
   { to: '/fit-finder', label: 'Fit Finder', end: false },
+];
+// Vintage Maps 는 개발 전용(App.tsx 의 라우트 가드와 짝). 프로덕션 빌드에서는
+// import.meta.env.DEV 가 false 로 치환되어 메뉴·푸터 어디에도 노출되지 않는다.
+const NAV_RIGHT = [
+  { to: '/about-me', label: 'About Me', end: false },
   { to: '/videos', label: 'Videos', end: false },
   ...(import.meta.env.DEV ? [{ to: '/vintage-maps', label: 'Vintage Maps', end: false }] : []),
-  { to: '/about-me', label: 'About Me', end: false },
 ];
+// 모바일 메뉴·푸터처럼 한 줄로 늘어놓는 곳
+const NAV = [...NAV_LEFT, ...NAV_RIGHT];
+
+const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+  `text-lg font-medium ${isActive ? 'underline underline-offset-4 text-gray-900' : 'text-gray-600 hover:text-gray-900'}`;
 
 export default function Layout() {
   useAnalyticsPageview();
@@ -25,37 +35,42 @@ export default function Layout() {
     <div className="min-h-screen bg-gray-100" style={{ fontFamily: "'Rajdhani', 'Noto Sans', sans-serif" }}>
       {/* Header */}
       <header className="bg-white shadow-sm py-4 px-6 md:px-12">
-        <div className="container mx-auto flex justify-between items-center">
-          <Link to="/" className="text-2xl font-bold text-gray-800">
-            Watch HIVE
-          </Link>
-          <nav className="hidden md:flex space-x-8">
-            {NAV.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                className={({ isActive }) =>
-                  `text-lg font-medium ${
-                    isActive
-                      ? 'underline underline-offset-4 text-gray-900'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`
-                }
-              >
+        {/* 모바일은 [Watch HIVE ... 햄버거], 데스크톱은 가운데 열이 Watch HIVE 인 3열.
+            양쪽 1fr 이 같은 폭이라 Watch HIVE 가 화면 정중앙에 온다. */}
+        <div className="container mx-auto flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] md:gap-8">
+          <nav className="hidden md:flex justify-end items-center space-x-8">
+            {NAV_LEFT.map((item) => (
+              <NavLink key={item.to} to={item.to} end={item.end} className={navLinkClass}>
                 {item.label}
               </NavLink>
             ))}
           </nav>
-          <div className="flex items-center space-x-4">
-            <button
-              className="md:hidden text-gray-600 hover:text-gray-900"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="메뉴 열기"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></svg>
-            </button>
-          </div>
+
+          <NavLink
+            to={HOME.to}
+            end={HOME.end}
+            className={({ isActive }) =>
+              `text-2xl font-bold text-gray-800 whitespace-nowrap ${isActive ? 'underline underline-offset-4' : ''}`
+            }
+          >
+            {HOME.label}
+          </NavLink>
+
+          <nav className="hidden md:flex justify-start items-center space-x-8">
+            {NAV_RIGHT.map((item) => (
+              <NavLink key={item.to} to={item.to} end={item.end} className={navLinkClass}>
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+
+          <button
+            className="md:hidden text-gray-600 hover:text-gray-900"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="메뉴 열기"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></svg>
+          </button>
         </div>
       </header>
 
@@ -65,6 +80,15 @@ export default function Layout() {
           <button className="absolute top-4 right-4 text-gray-800" onClick={() => setIsMobileMenuOpen(false)} aria-label="메뉴 닫기">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
           </button>
+          {/* 오버레이가 헤더를 덮으므로 홈으로 가는 Watch HIVE 도 여기 넣는다 */}
+          <NavLink
+            to={HOME.to}
+            end={HOME.end}
+            className="text-3xl text-gray-800 font-bold"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            {HOME.label}
+          </NavLink>
           {NAV.map((item) => (
             <NavLink
               key={item.to}
@@ -92,7 +116,7 @@ export default function Layout() {
           <div>
             <h4 className="text-white font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm">
-              {NAV.map((item) => (
+              {[HOME, ...NAV].map((item) => (
                 <li key={item.to}>
                   <Link to={item.to} className="hover:text-white">{item.label}</Link>
                 </li>
