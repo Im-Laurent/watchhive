@@ -1,10 +1,19 @@
 {
-  "updatedAt": "2026-08-14T15:47:28.857Z",
+  "updatedAt": "2026-08-15T15:16:27.424Z",
   "channelId": "UC9YPdU50ZuFvqLnxw0HYmGA",
   "count": 12,
   "videos": [
     {
       "id": 1,
+      "youtubeId": "nlTqOfQfyOo",
+      "title": "600년된 시장에서 빈티지 시계 쇼핑 | 남대문시장",
+      "description": "🎬 10만원 들고 가벼운 마음으로 남대문시장 워치헌팅에 나선 빈시멍. 400만원 까르띠에와 3천만원 바쉐론콘스탄틴 빈티지를 만나게 되는데..",
+      "category": "Watch Hunting",
+      "publishedAt": "2026-08-14T23:00:18Z",
+      "thumbnail": "https://i.ytimg.com/vi/nlTqOfQfyOo/maxresdefault.jpg"
+    },
+    {
+      "id": 2,
       "youtubeId": "CZBu68vFik4",
       "title": "7천억 자산 '마이클잭슨'의 애착시계... 고작 11만원? 드디어 손에 넣었습니다.",
       "description": "🕺마이클 잭슨이 아껴 찼던 시계. 훗날 대한민국 학생들의 로망이 됐던 '그' 브랜드. 'ALBA' 의 과거와 현재를 소개합니다.",
@@ -13,7 +22,7 @@
       "thumbnail": "https://i.ytimg.com/vi/CZBu68vFik4/maxresdefault.jpg"
     },
     {
-      "id": 2,
+      "id": 3,
       "youtubeId": "dLSZmEJ3uWk",
       "title": "동묘에서 사온 튜더 시계... 뚜껑 열어봤더니 어?",
       "description": "동묘의 야생 좌판에서 단돈 4만 원에 건진 의문의 '튜더' 시계. 수백만 원 가치의 진품일지 뒷 뚜껑의 운명이 열리는데.. 빈시멍 워치헌팅 시리즈 서울시계 동묘편.",
@@ -22,7 +31,7 @@
       "thumbnail": "https://i.ytimg.com/vi/dLSZmEJ3uWk/maxresdefault.jpg"
     },
     {
-      "id": 3,
+      "id": 4,
       "youtubeId": "fTNyVCT7yvE",
       "title": "조개 다이얼. 맛보면 당신의 기추 욕망이 폭발합니다.",
       "description": "빌 게이츠가 수억 주고 탐낸 그 소재. 자개가 시계 다이얼에 사용되기 시작한 배경.",
@@ -31,7 +40,7 @@
       "thumbnail": "https://i.ytimg.com/vi/fTNyVCT7yvE/maxresdefault.jpg"
     },
     {
-      "id": 4,
+      "id": 5,
       "youtubeId": "GhfWq35LtaQ",
       "title": "엔저라도 일본 안 갑니다. 종로에서 찾은 역대급 빈티지 컬렉션",
       "description": "대한민국 예지동 시계 골목의 명맥을 잇는 세운스퀘어와 문화유산 종묘 일대. 국내 빈티지 시계와 역사가 살아 숨 쉬는 이곳, 서울 종로 도심 속 워치 헌팅 영상.",
@@ -40,7 +49,7 @@
       "thumbnail": "https://i.ytimg.com/vi/GhfWq35LtaQ/maxresdefault.jpg"
     },
     {
-      "id": 5,
+      "id": 6,
       "youtubeId": "O23W4NKI2uI",
       "title": "카리나 시계 까르띠에 탱크루이 아니라니까 사실은..",
       "description": "빈티지 시계 덕후가 말아서 떠먹여주는",
@@ -49,7 +58,7 @@
       "thumbnail": "https://i.ytimg.com/vi/O23W4NKI2uI/maxresdefault.jpg"
     },
     {
-      "id": 6,
+      "id": 7,
       "youtubeId": "ISnUWSsiAFI",
       "title": "두쫀쿠 40번 참으면 시계 사는 이곳. 상하이 빈티지쇼핑 직접 가봤습니다.",
       "description": "상하이 시계여행 빈티지편🏮",
@@ -58,7 +67,7 @@
       "thumbnail": "https://i.ytimg.com/vi/ISnUWSsiAFI/maxresdefault.jpg"
     },
     {
-      "id": 7,
+      "id": 8,
       "youtubeId": "Uc1-MRx1SwY",
       "title": "상하이 시계 여행. '이것'만 알아도 성공입니다.",
       "description": "🏮상하이 시계여행 와이탄편🏮",
@@ -67,7 +76,7 @@
       "thumbnail": "https://i.ytimg.com/vi/Uc1-MRx1SwY/maxresdefault.jpg"
     },
     {
-      "id": 8,
+      "id": 9,
       "youtubeId": "F1-qHczSpL0",
       "title": "세이코 로토콜. 우주와 심해를 모두 정복한 단 하나의 시계. SMGG19",
       "description": "🛰️무려 3,200만원에 낙찰된 세이코 전자시계의 숨겨진 이야기🚀",
@@ -76,7 +85,7 @@
       "thumbnail": "https://i.ytimg.com/vi/F1-qHczSpL0/maxresdefault.jpg"
     },
     {
-      "id": 9,
+      "id": 10,
       "youtubeId": "vLLYrPZsUH4",
       "title": "도쿄 우에노. 일본 빈티지 시계 천국, 직접 가봤습니다",
       "description": "🗼일본 도쿄 시계여행 우에노 빈티지편🗼",
@@ -85,7 +94,7 @@
       "thumbnail": "https://i.ytimg.com/vi/vLLYrPZsUH4/maxresdefault.jpg"
     },
     {
-      "id": 10,
+      "id": 11,
       "youtubeId": "srdbxEj2MEE",
       "title": "도쿄 긴자. 빈티지 시계 쇼핑의 모든 것. 완벽 코스 가이드",
       "description": "🗼일본 도쿄 시계여행 긴자 빈티지편🗼",
@@ -94,22 +103,13 @@
       "thumbnail": "https://i.ytimg.com/vi/srdbxEj2MEE/maxresdefault.jpg"
     },
     {
-      "id": 11,
+      "id": 12,
       "youtubeId": "p3zrB9EPpNY",
       "title": "인도네시아 발리. 한국에선 상상 못할 발리의 시계. 이건 진짜 예상 못했다",
       "description": "✈️인도네시아 시계여행 발리편✈️",
       "category": "Watch Hunting",
       "publishedAt": "2025-09-23T22:01:05Z",
       "thumbnail": "https://i.ytimg.com/vi/p3zrB9EPpNY/maxresdefault.jpg"
-    },
-    {
-      "id": 12,
-      "youtubeId": "xY1LA-Y7O9s",
-      "title": "조용히 가격 상승 중인 나만 알고 싶은 시계. 론진 옥타곤 3209 빈티지",
-      "description": "빈티지 씬에서 주목 받으며 조용히 가격 상승 중인 나만 알고 싶은 시계.",
-      "category": "Review",
-      "publishedAt": "2025-08-06T22:01:14Z",
-      "thumbnail": "https://i.ytimg.com/vi/xY1LA-Y7O9s/maxresdefault.jpg"
     }
   ]
 }
