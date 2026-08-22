@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-21T15:28:51.429Z",
+  "updatedAt": "2026-08-22T15:16:59.387Z",
   "channelId": "UC9YPdU50ZuFvqLnxw0HYmGA",
   "count": 12,
   "videos": [
@@ -32,6 +32,15 @@
     },
     {
       "id": 4,
+      "youtubeId": "v6B5_cfnSiY",
+      "title": "도쿄 빈티지 시계 25만원",
+      "description": "",
+      "category": "Review",
+      "publishedAt": "2026-05-21T14:15:21Z",
+      "thumbnail": "https://i.ytimg.com/vi/v6B5_cfnSiY/maxresdefault.jpg"
+    },
+    {
+      "id": 5,
       "youtubeId": "fTNyVCT7yvE",
       "title": "조개 다이얼. 맛보면 당신의 기추 욕망이 폭발합니다.",
       "description": "빌 게이츠가 수억 주고 탐낸 그 소재. 자개가 시계 다이얼에 사용되기 시작한 배경.",
@@ -40,7 +49,7 @@
       "thumbnail": "https://i.ytimg.com/vi/fTNyVCT7yvE/maxresdefault.jpg"
     },
     {
-      "id": 5,
+      "id": 6,
       "youtubeId": "GhfWq35LtaQ",
       "title": "엔저라도 일본 안 갑니다. 종로에서 찾은 역대급 빈티지 컬렉션",
       "description": "대한민국 예지동 시계 골목의 명맥을 잇는 세운스퀘어와 문화유산 종묘 일대. 국내 빈티지 시계와 역사가 살아 숨 쉬는 이곳, 서울 종로 도심 속 워치 헌팅 영상.",
@@ -49,7 +58,7 @@
       "thumbnail": "https://i.ytimg.com/vi/GhfWq35LtaQ/maxresdefault.jpg"
     },
     {
-      "id": 6,
+      "id": 7,
       "youtubeId": "O23W4NKI2uI",
       "title": "카리나 시계 까르띠에 탱크루이 아니라니까 사실은..",
       "description": "빈티지 시계 덕후가 말아서 떠먹여주는",
@@ -58,7 +67,7 @@
       "thumbnail": "https://i.ytimg.com/vi/O23W4NKI2uI/maxresdefault.jpg"
     },
     {
-      "id": 7,
+      "id": 8,
       "youtubeId": "ISnUWSsiAFI",
       "title": "두쫀쿠 40번 참으면 시계 사는 이곳. 상하이 빈티지쇼핑 직접 가봤습니다.",
       "description": "상하이 시계여행 빈티지편🏮",
@@ -67,7 +76,7 @@
       "thumbnail": "https://i.ytimg.com/vi/ISnUWSsiAFI/maxresdefault.jpg"
     },
     {
-      "id": 8,
+      "id": 9,
       "youtubeId": "Uc1-MRx1SwY",
       "title": "상하이 시계 여행. '이것'만 알아도 성공입니다.",
       "description": "🏮상하이 시계여행 와이탄편🏮",
@@ -76,7 +85,7 @@
       "thumbnail": "https://i.ytimg.com/vi/Uc1-MRx1SwY/maxresdefault.jpg"
     },
     {
-      "id": 9,
+      "id": 10,
       "youtubeId": "F1-qHczSpL0",
       "title": "세이코 로토콜. 우주와 심해를 모두 정복한 단 하나의 시계. SMGG19",
       "description": "🛰️무려 3,200만원에 낙찰된 세이코 전자시계의 숨겨진 이야기🚀",
@@ -85,7 +94,7 @@
       "thumbnail": "https://i.ytimg.com/vi/F1-qHczSpL0/maxresdefault.jpg"
     },
     {
-      "id": 10,
+      "id": 11,
       "youtubeId": "vLLYrPZsUH4",
       "title": "도쿄 우에노. 일본 빈티지 시계 천국, 직접 가봤습니다",
       "description": "🗼일본 도쿄 시계여행 우에노 빈티지편🗼",
@@ -94,22 +103,13 @@
       "thumbnail": "https://i.ytimg.com/vi/vLLYrPZsUH4/maxresdefault.jpg"
     },
     {
-      "id": 11,
+      "id": 12,
       "youtubeId": "srdbxEj2MEE",
       "title": "도쿄 긴자. 빈티지 시계 쇼핑의 모든 것. 완벽 코스 가이드",
       "description": "🗼일본 도쿄 시계여행 긴자 빈티지편🗼",
       "category": "Watch Hunting",
       "publishedAt": "2025-10-10T23:01:04Z",
       "thumbnail": "https://i.ytimg.com/vi/srdbxEj2MEE/maxresdefault.jpg"
-    },
-    {
-      "id": 12,
-      "youtubeId": "p3zrB9EPpNY",
-      "title": "인도네시아 발리. 한국에선 상상 못할 발리의 시계. 이건 진짜 예상 못했다",
-      "description": "✈️인도네시아 시계여행 발리편✈️",
-      "category": "Watch Hunting",
-      "publishedAt": "2025-09-23T22:01:05Z",
-      "thumbnail": "https://i.ytimg.com/vi/p3zrB9EPpNY/maxresdefault.jpg"
     }
   ]
 }
