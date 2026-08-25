@@ -10,6 +10,7 @@ const HOME = { to: '/', label: 'Watch HIVE', end: true };
 const NAV_LEFT = [
   { to: '/year-finder', label: 'Year Finder', end: false },
   { to: '/fit-finder', label: 'Fit Finder', end: false },
+  { to: '/timegrapher', label: 'Timegrapher', end: false },
 ];
 const NAV_RIGHT = [
   { to: '/about-me', label: 'About Me', end: false },

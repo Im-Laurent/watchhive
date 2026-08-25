@@ -17,6 +17,9 @@ dist-ssr
 takeout/
 public/places.candidates.json
 
+# 진행 중이거나 접어둔 작업물. 운영 빌드에 들어가지 않으므로 저장소에는 두지 않는다.
+_shelved/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

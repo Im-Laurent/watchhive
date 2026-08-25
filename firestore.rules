@@ -1,0 +1,38 @@
+rules_version = '2';
+
+// 로그인 없는 공개 사이트에서 쓰는 익명 누적 카운터. 누구나 쓸 수 있는 문서라
+// "정확히 한 필드가 +1" 이외의 모든 쓰기를 거부해서, 임의의 값 설정·감소·필드 추가를 막는다.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 카운터 하나가 그대로이거나 정확히 +1인지 확인. 필드가 아직 없으면 0으로 간주한다.
+    function counterHeldOrIncremented(field) {
+      return request.resource.data.get(field, 0) is int
+        && (request.resource.data.get(field, 0) == resource.data.get(field, 0)
+            || request.resource.data.get(field, 0) == resource.data.get(field, 0) + 1);
+    }
+
+    // 세 카운터 중 정확히 하나만 바뀌고, 그 변화가 +1일 때만 허용.
+    // (바뀐 키가 하나뿐인데 세 필드 모두 "그대로 또는 +1"이면, 그 하나는 반드시 +1이다.)
+    function isSingleCounterIncrement() {
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      return changed.size() == 1
+        && changed.hasOnly(['likes', 'measurements', 'shares'])
+        && counterHeldOrIncremented('likes')
+        && counterHeldOrIncremented('measurements')
+        && counterHeldOrIncremented('shares');
+    }
+
+    match /stats/{docId} {
+      allow read: if true;
+      // 생성/삭제를 막으므로 stats/timegrapher 문서는 콘솔에서 한 번 만들어둬야 한다.
+      allow create, delete: if false;
+      allow update: if isSingleCounterIncrement();
+    }
+
+    // 나중에 다른 컬렉션이 생겨도 실수로 열려 있지 않도록 그 외 경로는 전부 거부.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
