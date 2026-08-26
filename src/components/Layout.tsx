@@ -3,24 +3,20 @@ import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useAnalyticsPageview } from '../hooks/useAnalyticsPageview';
 import { useClipboard } from '../hooks/useClipboard';
 
-// Home 메뉴는 따로 두지 않고 가운데의 Watch HIVE 가 그 자리를 대신한다.
+// Home 메뉴는 따로 두지 않고 맨 왼쪽의 Watch HIVE 가 그 자리를 대신한다.
 const HOME = { to: '/', label: 'Watch HIVE', end: true };
 
-// 데스크톱 헤더는 [왼쪽 메뉴] Watch HIVE [오른쪽 메뉴] 로 나뉜다.
-const NAV_LEFT = [
+// 데스크톱 헤더 · 모바일 메뉴 · 푸터가 모두 이 순서를 그대로 쓴다.
+const NAV = [
+  { to: '/timegrapher', label: 'Timegrapher', end: false },
   { to: '/year-finder', label: 'Year Finder', end: false },
   { to: '/fit-finder', label: 'Fit Finder', end: false },
-  { to: '/timegrapher', label: 'Timegrapher', end: false },
-];
-const NAV_RIGHT = [
-  { to: '/about-me', label: 'About Me', end: false },
   { to: '/videos', label: 'Videos', end: false },
+  { to: '/about-me', label: 'About Me', end: false },
 ];
-// 모바일 메뉴·푸터처럼 한 줄로 늘어놓는 곳
-const NAV = [...NAV_LEFT, ...NAV_RIGHT];
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-  `text-lg font-medium ${isActive ? 'underline underline-offset-4 text-gray-900' : 'text-gray-600 hover:text-gray-900'}`;
+  `text-lg font-medium whitespace-nowrap ${isActive ? 'underline underline-offset-4 text-gray-900' : 'text-gray-600 hover:text-gray-900'}`;
 
 export default function Layout() {
   useAnalyticsPageview();
@@ -33,17 +29,9 @@ export default function Layout() {
     <div className="min-h-screen bg-gray-100" style={{ fontFamily: "'Rajdhani', 'Noto Sans', sans-serif" }}>
       {/* Header */}
       <header className="bg-white shadow-sm py-4 px-6 md:px-12">
-        {/* 모바일은 [Watch HIVE ... 햄버거], 데스크톱은 가운데 열이 Watch HIVE 인 3열.
-            양쪽 1fr 이 같은 폭이라 Watch HIVE 가 화면 정중앙에 온다. */}
-        <div className="container mx-auto flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] md:gap-8 lg:gap-16 xl:gap-20">
-          <nav className="hidden md:flex justify-end items-center space-x-8 lg:space-x-12">
-            {NAV_LEFT.map((item) => (
-              <NavLink key={item.to} to={item.to} end={item.end} className={navLinkClass}>
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
-
+        {/* [Watch HIVE ... 메뉴] — 모바일은 메뉴 자리에 햄버거가 온다.
+            메뉴가 5개라 md 폭에서는 간격을 좁혀야 한 줄에 들어간다. */}
+        <div className="container mx-auto flex items-center justify-between gap-6">
           <NavLink
             to={HOME.to}
             end={HOME.end}
@@ -54,8 +42,8 @@ export default function Layout() {
             {HOME.label}
           </NavLink>
 
-          <nav className="hidden md:flex justify-start items-center space-x-8 lg:space-x-12">
-            {NAV_RIGHT.map((item) => (
+          <nav className="hidden md:flex items-center space-x-5 lg:space-x-8 xl:space-x-10">
+            {NAV.map((item) => (
               <NavLink key={item.to} to={item.to} end={item.end} className={navLinkClass}>
                 {item.label}
               </NavLink>
