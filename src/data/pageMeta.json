@@ -1,0 +1,44 @@
+{
+  "home": {
+    "title": "Watch HIVE",
+    "description": "빈티지 시계 애호가를 위한 공간. Timegrapher로 시계 상태를 재고, Year Finder로 생산년도를, Fit Finder로 내 손목에 맞는 사이즈를 찾아보세요.",
+    "path": "/",
+    "image": "/images/og/home.jpg",
+    "imageAlt": "회색 패브릭 위에 스트랩을 펼쳐 나란히 놓은 빈티지 시계 여러 점"
+  },
+  "timegrapher": {
+    "title": "Timegrapher",
+    "description": "시계를 마이크에 가까이 대고 소리를 들려주면 BPH, Rate, Beat Error를 측정해주는 무료 온라인 타임그래퍼. 설치 없이 폰 브라우저에서 바로 이용하세요.",
+    "path": "/timegrapher",
+    "image": "/images/og/timegrapher.jpg",
+    "imageAlt": "타임그래퍼 스탠드에 물려 있는 금장 빈티지 론진 시계"
+  },
+  "yearFinder": {
+    "title": "Year Finder",
+    "description": "브랜드와 시리얼 번호로 빈티지 시계의 생산년도를 조회합니다. Rolex, Omega, IWC, Longines, Universal Genève, Seiko 지원.",
+    "path": "/year-finder",
+    "image": "/images/og/year-finder.jpg",
+    "imageAlt": "빨간 까르띠에 박스와 책 위에 놓인 빈티지 까르띠에 시계 세 점"
+  },
+  "fitFinder": {
+    "title": "Fit Finder",
+    "description": "손목 단면 너비로 나에게 어울리는 시계 케이스·러그 사이즈를 계산합니다.",
+    "path": "/fit-finder",
+    "image": "/images/og/fit-finder.jpg",
+    "imageAlt": "가죽 위에 나란히 놓인 빈티지 시계 여섯 점 — 케이스 크기와 형태가 저마다 다르다"
+  },
+  "videos": {
+    "title": "Videos",
+    "description": "빈시멍 유튜브 채널의 최신 영상. 빈티지 시계 리뷰와 시계 헌팅 영상 모음.",
+    "path": "/videos",
+    "image": "/images/og/videos.jpg",
+    "imageAlt": "베이지색 바탕에 나란히 놓인 가죽 시계 스트랩 여러 개"
+  },
+  "aboutMe": {
+    "title": "About Me",
+    "description": "시계 애호가 빈시멍 소개. Watch HIVE를 만든 이유와 함께 나누고 싶은 이야기.",
+    "path": "/about-me",
+    "image": "/images/og/about-me.jpg",
+    "imageAlt": "어두운 석판 위에 나란히 놓인 빈티지 시계 일곱 점"
+  }
+}
