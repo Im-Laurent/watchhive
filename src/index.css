@@ -64,3 +64,20 @@ body {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
   cursor: pointer;
 }
+
+/* Timegrapher 좋아요 버튼 — 클릭 순간 하트가 한 번 튀어오른다.
+   접근성 설정에서 모션을 줄이도록 해둔 사용자에게는 애니메이션을 걸지 않는다. */
+@keyframes tg-heart-pop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.45); }
+  60%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+.tg-heart--pop {
+  animation: tg-heart-pop 0.45s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tg-heart--pop {
+    animation: none;
+  }
+}

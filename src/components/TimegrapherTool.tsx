@@ -2,14 +2,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTickCapture } from '../hooks/useTickCapture';
 import { useDiagnosis } from '../hooks/useDiagnosis';
 import { useCommunityStats } from '../hooks/useCommunityStats';
-import { useShare } from '../hooks/useShare';
+import { useClipboard } from '../hooks/useClipboard';
 import { estimateBph, type BphEstimate } from '../lib/timegrapher/bphEstimator';
 import { calculateRate, type RateEstimate } from '../lib/timegrapher/rateCalculator';
 import { calculateBeatError, type BeatErrorEstimate } from '../lib/timegrapher/beatError';
 import {
+  DISCLAIMERS,
   GRADE_LABEL,
   LOW_CONFIDENCE_HINT,
-  MEASUREMENT_CAVEAT,
   REFERENCE_DISCLAIMER,
   REFERENCE_ROWS,
   judgeBeatError,
@@ -18,20 +18,29 @@ import {
 } from '../lib/timegrapher/referenceRanges';
 import RecommendedVideo from './RecommendedVideo';
 
+// 배지·버튼·결과 패널 색은 Year Finder / Fit Finder에서 쓰는 팔레트를 그대로 따른다.
 const GRADE_STYLE: Record<Grade, string> = {
-  excellent: 'text-green-700 bg-green-50',
-  good: 'text-blue-700 bg-blue-50',
-  caution: 'text-amber-700 bg-amber-50',
+  excellent: 'text-green-600 bg-green-100',
+  good: 'text-blue-500 bg-blue-100',
+  caution: 'text-amber-600 bg-amber-100',
 };
+
+// 다른 도구 페이지의 주 버튼과 동일한 형태(gray-800 · rounded-full · py-3.5 · w-full).
+const PRIMARY_BUTTON =
+  'w-full bg-gray-800 hover:bg-gray-700 text-gray-100 font-bold py-3.5 px-4 rounded-full shadow-md transition';
+const SECONDARY_BUTTON =
+  'w-full bg-white hover:bg-gray-50 text-gray-700 font-bold py-3.5 px-4 rounded-full border-2 border-gray-300 transition';
 
 /** 측정값 카드 하나. 판정 배지는 값이 확정된 뒤에만 붙인다(측정 중에는 등급이 계속 흔들려 오히려 헷갈림). */
 function MetricCard({ label, value, grade }: { label: string; value: string; grade?: Grade }) {
   return (
-    <div className="bg-gray-50 rounded-xl p-3">
-      <p className="text-xs text-gray-400 mb-1">{label}</p>
-      <p className="text-xl font-bold text-gray-800">{value}</p>
+    <div className="bg-white rounded-xl p-3 sm:p-4 text-center shadow-sm">
+      <p className="text-xs sm:text-sm text-gray-500 mb-1">{label}</p>
+      <p className="text-xl sm:text-2xl font-bold text-blue-700">{value}</p>
       {grade && (
-        <span className={`inline-block mt-1.5 text-[11px] font-semibold px-1.5 py-0.5 rounded ${GRADE_STYLE[grade]}`}>
+        <span
+          className={`inline-block mt-2 text-[11px] sm:text-xs font-bold tracking-wider rounded-full px-2 sm:px-3 py-0.5 sm:py-1 ${GRADE_STYLE[grade]}`}
+        >
           {GRADE_LABEL[grade]}
         </span>
       )}
@@ -39,40 +48,30 @@ function MetricCard({ label, value, grade }: { label: string; value: string; gra
   );
 }
 
-/** 숫자만으로는 좋고 나쁨을 알 수 없으므로, 정비 기준과 빈티지에서 통용되는 기준을 나란히 펼쳐 보여준다. */
+/** 숫자만으로는 좋고 나쁨을 알 수 없으므로, 정비 기준과 빈티지에서 통용되는 기준을 나란히 보여준다. */
 function ReferenceNote() {
   return (
-    <details className="mt-4 text-left group">
-      <summary className="cursor-pointer list-none flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700">
-        <svg
-          width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"
-          strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
-          className="transition-transform group-open:rotate-90"
-        >
-          <polyline points="9 18 15 12 9 6" />
-        </svg>
-        이 숫자, 어느 정도면 정상인가요?
-      </summary>
-
-      <div className="mt-3 space-y-2">
+    <div className="mt-6 p-5 bg-gray-50 rounded-xl text-gray-700 text-left">
+      <p className="font-bold text-lg mb-3">📊 참고해 주세요</p>
+      <div className="space-y-3">
         {REFERENCE_ROWS.map((row) => (
-          <div key={row.metric} className="bg-gray-50 rounded-xl p-3">
-            <p className="text-xs font-bold text-gray-700 mb-2">{row.metric}</p>
-            <p className="text-xs text-gray-500 leading-relaxed mb-1">
-              <span className="font-semibold text-gray-600">정비 기준</span> · {row.serviced}
+          <div key={row.metric} className="bg-white rounded-xl p-4 shadow-sm">
+            <p className="font-bold text-gray-800 mb-2">{row.metric}</p>
+            <p className="text-sm text-gray-600 leading-relaxed mb-1">
+              <span className="font-semibold text-gray-700">정비 기준</span> · {row.serviced}
             </p>
-            <p className="text-xs text-gray-500 leading-relaxed">
-              <span className="font-semibold text-gray-600">빈티지 허용</span> · {row.vintage}
+            <p className="text-sm text-gray-600 leading-relaxed">
+              <span className="font-semibold text-gray-700">빈티지 허용</span> · {row.vintage}
             </p>
           </div>
         ))}
-        <p className="text-[11px] text-gray-400 leading-relaxed">{REFERENCE_DISCLAIMER}</p>
+        <p className="text-sm text-gray-500 leading-relaxed">{REFERENCE_DISCLAIMER}</p>
       </div>
-    </details>
+    </div>
   );
 }
 
-/** 측정 완료 후 "진단 결과 해석하기" 버튼/Turnstile 위젯/결과·실패 안내를 보여준다. */
+/** 측정 완료 후 "결과 해석하기" 버튼/Turnstile 위젯/결과·실패 안내를 보여준다. */
 function DiagnosisSection({ result }: { result: MeasurementResult }) {
   const diagnosis = useDiagnosis();
   const { bph } = result.bphEstimate;
@@ -81,7 +80,7 @@ function DiagnosisSection({ result }: { result: MeasurementResult }) {
   const canDiagnose = bph != null && secondsPerDay != null && beatErrorMs != null;
 
   return (
-    <div className="mt-6 text-left">
+    <div className="mt-4 text-left">
       {/* Turnstile 위젯 컨테이너. appearance:'interaction-only'로 렌더하므로 평상시에는 성공/실패
           표시가 나타나지 않고, 사람 확인이 실제로 필요한 경우에만 위젯이 보인다. display:none으로
           숨기면 위젯 동작이 깨질 수 있어(공식 가이드) 요소 자체는 레이아웃에 남겨둔다. */}
@@ -91,22 +90,24 @@ function DiagnosisSection({ result }: { result: MeasurementResult }) {
         <button
           type="button"
           onClick={() => diagnosis.requestDiagnosis({ bph, rateSecondsPerDay: secondsPerDay, beatErrorMs })}
-          className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-3 rounded-xl transition"
+          className={PRIMARY_BUTTON}
         >
-          진단 결과 해석하기
+          결과 해석하기
         </button>
       )}
 
       {(diagnosis.status === 'verifying' || diagnosis.status === 'requesting') && (
-        <p className="text-sm text-gray-400 text-center py-3">해석 중이에요…</p>
+        <p className="text-base text-gray-500 text-center py-3.5">해석 중이에요…</p>
       )}
 
       {diagnosis.status === 'success' && diagnosis.comment && (
-        <div className="bg-blue-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed">{diagnosis.comment}</div>
+        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5 text-base text-gray-700 leading-relaxed">
+          {diagnosis.comment}
+        </div>
       )}
 
       {diagnosis.status === 'failed' && (
-        <p className="text-xs text-gray-400 text-center py-3">
+        <p className="text-sm text-gray-500 text-center leading-relaxed py-3">
           무료 서버를 쓰고 있어 트래픽이 몰리거나 한 사람이 여러 번 시도하는 경우 진단 결과 해석이 원활하지 않을 수
           있어요ㅠㅠ 다음에 다시 시도해 주세요.
         </p>
@@ -115,11 +116,46 @@ function DiagnosisSection({ result }: { result: MeasurementResult }) {
   );
 }
 
+/** 결과를 어디까지 믿어도 되는지 알려주는 고지. 숫자를 단정적으로 받아들이지 않도록 결과 아래에 둔다. */
+function Disclaimers() {
+  return (
+    <div className="mt-6 p-5 bg-gray-50 rounded-xl text-gray-700 text-left">
+      <p className="font-bold text-lg mb-3">💡 읽어주세요</p>
+      <div className="space-y-3">
+        {DISCLAIMERS.map((item) => (
+          <div key={item.title}>
+            <p className="font-bold text-gray-800 mb-1">{item.title}</p>
+            <p className="text-sm text-gray-600 leading-relaxed">{item.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /** 결과 화면 하단의 좋아요·공유 버튼과 누적 카운트. Firestore를 못 읽는 상황에서는 숫자 없이 버튼만 보인다. */
 function CommunitySection() {
   const { stats, liked, likeOnce, recordMeasurement, recordShare } = useCommunityStats();
-  const { handleShare, shareMessage } = useShare('Timegrapher', '내 시계 상태를 소리로 진단해보세요!');
+  // useShare는 클립보드 복사에 더해 navigator.share(네이티브 공유창)까지 띄운다. 여기서는 복사만
+  // 하고 안내 문구만 보여주기로 해서 useClipboard를 쓴다(다른 페이지의 안내 문구 표시 방식과 동일).
+  const { copyToClipboard, copyMessage } = useClipboard();
+  // 이미 좋아요를 누른 뒤에도 버튼이 반응은 해야 한다(예전엔 disabled라 hover도 클릭도 죽어서
+  // 고장난 것처럼 보였다). 중복 집계는 막되, 왜 안 올라가는지 한 줄로 알려준다.
+  const [likeNotice, setLikeNotice] = useState('');
+  // 값을 바꿔 svg의 key를 갱신하면 요소가 새로 마운트되면서 CSS 애니메이션이 처음부터 다시 돈다.
+  // (같은 클래스를 붙였다 떼는 방식은 연속 클릭 시 애니메이션이 재시작되지 않는다.)
+  const [popKey, setPopKey] = useState(0);
   const recordedRef = useRef(false);
+
+  const handleLike = useCallback(() => {
+    setPopKey((n) => n + 1);
+    if (liked) {
+      setLikeNotice('이미 좋아요를 눌렀어요!');
+      setTimeout(() => setLikeNotice(''), 3000);
+      return;
+    }
+    likeOnce();
+  }, [liked, likeOnce]);
 
   // 이 컴포넌트는 측정이 끝난 뒤에만 마운트되고 "다시 측정하기"를 누르면 언마운트되므로,
   // 마운트당 1회 기록이 곧 측정 1회가 된다. ref 가드는 StrictMode의 이중 실행만 막는 용도.
@@ -134,13 +170,18 @@ function CommunitySection() {
       <div className="flex gap-2">
         <button
           type="button"
-          onClick={likeOnce}
-          disabled={liked}
-          className={`flex-1 flex items-center justify-center gap-1.5 font-semibold py-3 rounded-xl transition ${
-            liked ? 'bg-red-50 text-red-500 cursor-default' : 'bg-gray-50 hover:bg-gray-100 text-gray-600'
+          onClick={handleLike}
+          className={`flex-1 flex items-center justify-center gap-2 font-bold py-3 px-4 rounded-full border-2 transition ${
+            liked
+              ? 'bg-red-50 hover:bg-red-100 text-red-500 border-red-200'
+              : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300'
           }`}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <svg
+            key={popKey}
+            className={popKey > 0 ? 'tg-heart--pop' : undefined}
+            width="18" height="18" viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
+          >
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
           좋아요{stats ? ` ${stats.likes.toLocaleString()}` : ''}
@@ -148,12 +189,12 @@ function CommunitySection() {
         <button
           type="button"
           onClick={() => {
-            void handleShare();
+            copyToClipboard(window.location.href, '링크가 클립보드에 복사되었어요!');
             recordShare();
           }}
-          className="flex-1 flex items-center justify-center gap-1.5 bg-gray-50 hover:bg-gray-100 text-gray-600 font-semibold py-3 rounded-xl transition"
+          className="flex-1 flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-bold py-3 px-4 rounded-full border-2 border-gray-300 transition"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <circle cx="18" cy="5" r="3" />
             <circle cx="6" cy="12" r="3" />
             <circle cx="18" cy="19" r="3" />
@@ -164,11 +205,8 @@ function CommunitySection() {
         </button>
       </div>
 
-      {shareMessage && <p className="text-xs text-green-600 mt-2 text-center">{shareMessage}</p>}
-      {stats && (
-        <p className="text-xs text-gray-400 mt-3 text-center">
-          지금까지 {stats.measurements.toLocaleString()}번 측정됐어요
-        </p>
+      {(copyMessage || likeNotice) && (
+        <p className="text-sm text-blue-600 mt-3 text-center">{copyMessage || likeNotice}</p>
       )}
     </div>
   );
@@ -328,31 +366,33 @@ function useVibrographRenderer(
 /** 측정 시작 전 안내: 폰의 어느 부분(마이크)을 시계 어디에 대야 하는지 보여주는 그림 가이드. */
 function PlacementGuide() {
   return (
-    <div className="flex flex-col items-center gap-4 mb-6">
-      <svg width="140" height="192" viewBox="0 0 140 192" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        {/* 시계 */}
-        <circle cx="70" cy="152" r="34" fill="#f3f4f6" stroke="#9ca3af" strokeWidth="2" />
-        <circle cx="70" cy="152" r="2.5" fill="#4b5563" />
-        <line x1="70" y1="152" x2="70" y2="134" stroke="#4b5563" strokeWidth="2" strokeLinecap="round" />
-        <line x1="70" y1="152" x2="82" y2="152" stroke="#4b5563" strokeWidth="2" strokeLinecap="round" />
-        <rect x="65" y="115" width="10" height="6" rx="2" fill="#9ca3af" />
-
-        {/* 폰 (하단이 시계면을 향함) */}
-        <rect x="46" y="14" width="48" height="88" rx="10" fill="#1f2937" />
-        <rect x="50" y="18" width="40" height="80" rx="6" fill="#374151" />
-        {/* 마이크 위치 표시 */}
-        <circle cx="70" cy="94" r="3" fill="#f97316" />
-
-        {/* 화살표: 마이크 → 시계면. 화살촉이 시계 케이스에 닿지 않게 여백을 둔다. */}
-        <line x1="70" y1="104" x2="70" y2="112" stroke="#f97316" strokeWidth="2" strokeDasharray="3 3" />
-        <path d="M70 114 L66 108 M70 114 L74 108" stroke="#f97316" strokeWidth="2" strokeLinecap="round" />
-      </svg>
-      <div className="text-sm text-gray-500 space-y-1.5 text-left max-w-md">
+    <div className="flex flex-col items-center mb-2">
+      <div className="mb-6">
+        <p className="text-xl font-bold text-gray-800">폰으로 간편한 시계 상태 진단</p>
+        <p className="text-sm text-gray-500 mt-1.5">설치 없이, 광고 없이, 무료로 제공합니다</p>
+      </div>
+      {/* 잘린 폰 윗부분은 위로 갈수록 흐려지며 투명하게 사라지도록 원본에 그라데이션을 구워 넣었다.
+          알파가 있는 선화라 webp가 png보다 4배 작다 — png는 webp를 못 읽는 구형 브라우저용 폴백. */}
+      <picture>
+        <source type="image/webp" srcSet="/images/timegrapher_guide.webp" />
+        <img
+          src="/images/timegrapher_guide.png"
+          alt="폰 아래쪽 마이크를 시계 쪽으로 향하게 두는 모습"
+          width={480}
+          height={932}
+          className="w-40 sm:w-44 h-auto mb-5"
+        />
+      </picture>
+      <div className="text-base text-gray-600 space-y-2 text-left max-w-md">
         <p>① 시계 태엽을 충분히 감아주세요</p>
         <p>② 조용한 곳에서 시계를 평평한 곳에 놓아주세요</p>
-        <p>③ 폰 아래쪽(마이크)을 시계 뒷면에 가까이 대주세요</p>
+        <p>③ 폰 아래쪽(마이크)을 시계에 최대한 가까이 대주세요</p>
       </div>
-      <p className="text-xs text-gray-400">측정에는 약 {WARMUP_SECONDS + MEASURE_SECONDS}초가 걸려요</p>
+      {/* 이 문구는 아래 "측정 시작" 버튼으로 이어지는 말이라, 위는 넓게 띄우고 버튼과는 붙여 둔다. */}
+      <div className="text-sm text-gray-500 space-y-0.5 mt-8">
+        <p>측정에는 약 {MEASURE_SECONDS}초가 걸려요</p>
+        <p>준비가 되었다면</p>
+      </div>
     </div>
   );
 }
@@ -391,7 +431,7 @@ const WARMUP_SECONDS = 3;
 // 쌓여 통계적으로 안정된 값을 낼 수 있다.
 const MEASURE_SECONDS = 15;
 
-type Phase = 'idle' | 'warming' | 'measuring' | 'done';
+type Phase = 'idle' | 'warming' | 'measuring' | 'stopped' | 'done';
 
 /**
  * 측정 세션의 진행 상태(준비 중 → 측정 중 → 완료)를 관리한다.
@@ -441,7 +481,9 @@ function useMeasurementSession(
     return () => clearInterval(id);
   }, [status, peaksRef, stopCapture]);
 
-  const cancel = useCallback(() => setPhase('idle'), []);
+  // 사용자가 직접 멈춘 경우는 'idle'로 되돌리지 않고 'stopped'로 둔다 — 그래야 그때까지 그린
+  // 그래프가 남고, 버튼도 "측정 시작"이 아니라 "다시 측정하기"로 보인다.
+  const cancel = useCallback(() => setPhase('stopped'), []);
 
   return { phase, elapsed, live, finalResult, cancel };
 }
@@ -463,35 +505,43 @@ export default function TimegrapherTool() {
     stop();
   };
 
+  const { copyToClipboard: copyLinkToClipboard, copyMessage: linkCopyMessage } = useClipboard();
+  const copyLink = useCallback(
+    () => copyLinkToClipboard(window.location.href, '링크가 클립보드에 복사되었어요!'),
+    [copyLinkToClipboard]
+  );
+
   const showCapturing = session.phase === 'warming' || session.phase === 'measuring';
   const isDone = session.phase === 'done';
+  const isStopped = session.phase === 'stopped';
   const measureProgress = Math.max(0, Math.min(MEASURE_SECONDS, Math.floor(session.elapsed - WARMUP_SECONDS)));
 
   return (
     <div className="bg-white rounded-2xl shadow-md p-6 md:p-8 mb-8 text-center">
       {status === 'error' && (
-        <p className="text-red-700 text-sm leading-relaxed bg-red-50 rounded-xl p-3 mb-6 text-left">
+        <p className="text-red-700 text-sm leading-relaxed bg-red-50 border border-red-200 rounded-xl p-4 mb-6 text-left">
           {error ?? '마이크를 열지 못했어요.'}
         </p>
       )}
       {/* 에러 상태에서도 안내 그림은 계속 보여준다 — 사용자가 다시 시도할 때 필요한 정보라서. */}
-      {(status === 'idle' || status === 'error') && !isDone && <PlacementGuide />}
-      {status === 'requesting' && <p className="text-gray-500">마이크 권한을 요청하고 있어요…</p>}
+      {(status === 'idle' || status === 'error') && !isDone && !isStopped && <PlacementGuide />}
+      {status === 'requesting' && <p className="text-base text-gray-500">마이크 권한을 요청하고 있어요…</p>}
 
-      {(showCapturing || isDone) && (
+      {(showCapturing || isStopped || isDone) && (
         <>
           <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} className="w-full rounded-lg" />
           {/* 캔버스 안에 그리면 축소 렌더링 때문에 뭉개져서 안 읽힌다 — HTML 텍스트로 뺐다. */}
-          <p className="text-[11px] text-gray-400 mt-1.5 mb-4">기준선 대비 편차 추이 (ms, 부드럽게 평균낸 값)</p>
+          <p className="text-xs text-gray-400 mt-1.5 mb-4">기준선 대비 편차 추이(평균값)</p>
 
-          {session.phase === 'warming' && <p className="text-sm text-gray-500 mb-4">준비 중이에요…</p>}
+          {session.phase === 'warming' && <p className="text-base text-gray-500 mb-4">준비 중이에요…</p>}
           {session.phase === 'measuring' && (
             <div className="mb-4">
-              <p className="text-sm text-gray-500 mb-2">
-                측정 중이에요… {measureProgress}/{MEASURE_SECONDS}초
+              {/* 폰을 시계에 댄 채로 화면을 곁눈질하는 상황이라, 남은 시간은 멀리서도 읽히게 크게 센다. */}
+              <p className="text-4xl font-bold text-gray-800 tabular-nums leading-none mb-3">
+                {MEASURE_SECONDS - measureProgress}
+                <span className="text-xl font-semibold text-gray-500 ml-1">초</span>
               </p>
-              {/* 남은 시간이 눈에 보여야 폰을 계속 대고 있어야 한다는 걸 알 수 있다. */}
-              <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gray-800 rounded-full transition-[width] duration-500 ease-linear"
                   style={{ width: `${(measureProgress / MEASURE_SECONDS) * 100}%` }}
@@ -499,15 +549,22 @@ export default function TimegrapherTool() {
               </div>
             </div>
           )}
+          {isStopped && <p className="text-base text-gray-500 mb-4">측정을 중단했어요</p>}
           {isDone && (
-            <p className="text-sm font-semibold text-green-600 mb-4 flex items-center justify-center gap-1.5">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <p className="mb-4 inline-flex items-center justify-center gap-1.5 text-xs font-bold tracking-wider text-green-600 bg-green-100 rounded-full px-3 py-1">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
               측정 완료
             </p>
           )}
 
+          {/* Fit Finder / Year Finder의 결과 패널과 같은 형태. 확정된 결과일 때만 파란 강조를 준다. */}
+          <div
+            className={`rounded-2xl border p-4 sm:p-6 ${
+              isDone ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-gray-50'
+            }`}
+          >
           <div className="grid grid-cols-3 gap-3">
             <MetricCard label="BPH" value={result?.bphEstimate.bph?.toLocaleString() ?? '측정 중'} />
             <MetricCard
@@ -525,43 +582,77 @@ export default function TimegrapherTool() {
               grade={isDone && result?.beatError.ms != null ? judgeBeatError(result.beatError.ms) : undefined}
             />
           </div>
+          </div>
 
           {isDone && result?.bphEstimate.confidence === 'low' && (
-            <p className="mt-4 text-left text-xs text-amber-700 bg-amber-50 rounded-xl p-3 leading-relaxed">
+            <p className="mt-4 text-left text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-4 leading-relaxed">
               {LOW_CONFIDENCE_HINT}
             </p>
           )}
 
-          {isDone && <ReferenceNote />}
-
+          {/* 버튼은 다음 행동 순서대로 묶어둔다: 결과 해석 → 다시 측정 → 좋아요·공유. */}
           {isDone && result && <DiagnosisSection result={result} />}
 
           {isDone && (
-            <p className="mt-6 text-left text-[11px] text-gray-400 leading-relaxed">{MEASUREMENT_CAVEAT}</p>
+            <button
+              type="button"
+              onClick={start}
+              className={`mt-3 ${SECONDARY_BUTTON}`}
+            >
+              다시 측정하기
+            </button>
           )}
 
           {isDone && <CommunitySection />}
+
+          {isDone && <ReferenceNote />}
+          {isDone && <Disclaimers />}
           {isDone && <RecommendedVideo />}
         </>
       )}
 
-      {showCapturing ? (
+      {showCapturing && (
         <button
           type="button"
           onClick={handleManualStop}
-          className="mt-6 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 px-8 rounded-full shadow-md transition"
+          className="mt-6 w-full bg-red-600 hover:bg-red-700 text-gray-100 font-bold py-3.5 px-4 rounded-full shadow-md transition"
         >
-          측정 정지
+          측정 중단
         </button>
-      ) : (
+      )}
+
+      {isStopped && (
+        <button
+          type="button"
+          onClick={start}
+          className={`mt-6 ${PRIMARY_BUTTON}`}
+        >
+          다시 측정하기
+        </button>
+      )}
+
+      {!showCapturing && !isStopped && !isDone && (
         <button
           type="button"
           onClick={start}
           disabled={status === 'requesting'}
-          className="mt-6 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3.5 px-8 rounded-full shadow-md transition"
+          className={`mt-3 ${PRIMARY_BUTTON} disabled:bg-gray-300 disabled:cursor-not-allowed`}
         >
-          {isDone ? '다시 측정하기' : '측정 시작'}
+          측정 시작
         </button>
+      )}
+
+      {/* 마이크가 없거나 권한을 주기 어려운 PC에서 들어온 사람을 폰으로 넘겨주기 위한 경로. */}
+      {!showCapturing && !isStopped && !isDone && (
+        <>
+          <button type="button" onClick={copyLink} className={`mt-3 ${SECONDARY_BUTTON}`}>
+            링크 복사
+          </button>
+          <p className="mt-3 text-sm text-gray-500 leading-relaxed">
+            PC에서 접속하셨다면 링크 복사 후 스마트폰 브라우저로 진행해 주세요
+          </p>
+          {linkCopyMessage && <p className="mt-2 text-sm text-blue-600">{linkCopyMessage}</p>}
+        </>
       )}
     </div>
   );
