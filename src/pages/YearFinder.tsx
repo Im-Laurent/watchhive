@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import PageHead from '../components/PageHead';
+import { PAGE_META } from '../data/pageMeta';
 import { useShare } from '../hooks/useShare';
 import { OMEGA_SERIALS } from '../data/serials/omega';
 import { ROLEX_SERIALS } from '../data/serials/rolex';
@@ -107,11 +108,7 @@ export default function YearFinder() {
 
   return (
     <>
-      <PageHead
-        title="Year Finder"
-        description="브랜드와 시리얼 번호로 빈티지 시계의 생산년도를 조회합니다. Rolex, Omega, IWC, Longines, Universal Genève, Seiko 지원."
-        path="/year-finder"
-      />
+      <PageHead {...PAGE_META.yearFinder} />
       <PageHero
         title="Year Finder"
         subtitle="시리얼 넘버로 빈티지 시계의 생산년도를 조회해 보세요"

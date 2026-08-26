@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import PageHead from '../components/PageHead';
+import { PAGE_META } from '../data/pageMeta';
 import { useShare } from '../hooks/useShare';
 import { FEATURED_VIDEO } from '../data/featured';
 
 const SERVICES = [
+  { to: '/timegrapher', title: 'Timegrapher', desc: '폰으로 간편한 시계 상태 진단', img: '/images/timegrapher_img.jpg' },
   { to: '/year-finder', title: 'Year Finder', desc: '시리얼 넘버로 생산년도 확인', img: '/images/year_finder_img.png' },
   { to: '/fit-finder', title: 'Fit Finder', desc: '내 손목에 딱 맞는 시계 사이즈 추천', img: '/images/fit_finder_img.jpg' },
   { to: '/videos', title: 'Videos', desc: '빈티지 시계 리뷰와 시계 헌팅 영상', img: '/images/videos_img.jpg' },
@@ -16,11 +18,7 @@ export default function Home() {
 
   return (
     <>
-      <PageHead
-        title="Watch HIVE"
-        description="빈티지 시계 애호가를 위한 공간. Fit Finder와 Year Finder로 나에게 맞는 시계를 찾다."
-        path="/"
-      />
+      <PageHead {...PAGE_META.home} />
       <main className="container mx-auto mt-0 px-0 md:px-0 py-0">
         <section className="relative w-full min-h-[400px] md:min-h-[600px] flex items-center justify-center bg-gray-200">
           <div className="absolute inset-0 bg-cover bg-center opacity-70" style={{ backgroundImage: 'url(/images/home_img.jpg)' }}></div>
@@ -34,8 +32,9 @@ export default function Home() {
         <section className="mb-12 px-6 md:px-12 mt-12">
           <h3 className="text-3xl font-bold text-gray-800 mb-8 text-center">제공 서비스</h3>
           {/* 카드는 가로로 긴 4:3. 폭이 좁아 4:3 높이로는 제목·설명이 안 들어가는
-              구간이 있어 최소 높이를 함께 둔다. 3단은 카드가 넉넉해지는 lg 부터. */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              구간이 있어 최소 높이를 함께 둔다. 카드가 4개라 3단으로 두면 마지막 한 장만
+              다음 줄에 남으므로, 2단(md·lg) → 4단(xl)으로 항상 줄이 꽉 차게 한다. */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
             {SERVICES.map((s) => (
               <div
                 key={s.to}

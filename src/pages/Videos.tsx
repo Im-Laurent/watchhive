@@ -1,17 +1,16 @@
 import PageHead from '../components/PageHead';
 import { useVideos } from '../hooks/useVideos';
+import { useShare } from '../hooks/useShare';
 import PageHero from '../components/PageHero';
+import { PAGE_META } from '../data/pageMeta';
 
 export default function Videos() {
   const { videos } = useVideos();
+  const { handleShare, shareMessage } = useShare();
 
   return (
     <>
-      <PageHead
-        title="Videos"
-        description="빈시멍 유튜브 채널의 최신 영상. 빈티지 시계 리뷰와 시계 헌팅 영상 모음."
-        path="/videos"
-      />
+      <PageHead {...PAGE_META.videos} />
       <PageHero
         title="Videos"
         subtitle="빈티지 시계 리뷰와 시계 헌팅 영상"
@@ -54,6 +53,15 @@ export default function Videos() {
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="p-8 text-center mt-4">
+          <p className="text-gray-700 text-lg mb-6">구독과 공유는 콘텐츠 제작에 큰 힘이 됩니다.</p>
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-4 mb-6">
+            <a href="https://www.youtube.com/@seemoung?sub_confirmation=1" target="_blank" rel="noreferrer" className="bg-gray-800 hover:bg-gray-700 text-gray-100 font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out text-base sm:text-lg w-full sm:w-auto">YouTube 채널 구독하기</a>
+            <button onClick={() => handleShare()} className="bg-gray-800 hover:bg-gray-700 text-gray-100 font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out text-base sm:text-lg w-full sm:w-auto">다른 시계 덕후에게 공유하기</button>
+          </div>
+          {shareMessage && <div className="mt-4 text-blue-600 text-sm">{shareMessage}</div>}
         </section>
       </main>
     </>

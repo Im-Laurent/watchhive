@@ -1,4 +1,5 @@
 import PageHead from '../components/PageHead';
+import { PAGE_META } from '../data/pageMeta';
 import { useShare } from '../hooks/useShare';
 import { useClipboard } from '../hooks/useClipboard';
 import PageHero from '../components/PageHero';
@@ -9,11 +10,7 @@ export default function AboutMe() {
 
   return (
     <>
-      <PageHead
-        title="About Me"
-        description="시계 애호가 빈시멍 소개. Watch HIVE를 만든 이유와 함께 나누고 싶은 이야기."
-        path="/about-me"
-      />
+      <PageHead {...PAGE_META.aboutMe} />
       {/* 원본이 2048px 이라 확대 없이 만들 수 있는 판이 여기까지다 */}
       <PageHero
         title="About Me"
@@ -29,6 +26,19 @@ export default function AboutMe() {
           <p className="text-gray-700 text-lg leading-relaxed mb-4">Watch Hive는<br />저와 같은 애호가 분들은 물론<br />현행 시계나 애플 워치를 착용하는 분들<br />그리고 막 시계에 관심을 갖기 시작한 모든 분들을 위한 공간입니다.</p>
           <p className="text-gray-700 text-lg leading-relaxed mb-4">이 곳의 모든 콘텐츠는 무료이니<br />누구나 자유롭게 이용하고, 편히 머물다 가시면 좋겠습니다.</p>
         </section>
+
+        {/* 편지의 맺음말 자리 — 위 본문과 한 덩어리로 읽히도록 붙여 둔다. */}
+        <section className="text-center mb-8 px-6 md:px-12">
+          <img
+            src="/images/standing-checking-watch.svg"
+            alt="손목시계를 확인하는 사람 일러스트"
+            width={128}
+            height={160}
+            className="mx-auto h-40 w-auto"
+          />
+          <p className="text-gray-700 text-lg mt-5">빈시멍 드림</p>
+        </section>
+
         <section className="p-8 text-center w-full px-6 md:px-12">
           <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-8">
             <a href="https://www.youtube.com/@seemoung" target="_blank" rel="noreferrer" className="flex flex-col items-center text-gray-800 hover:text-blue-600 transition-colors duration-200">

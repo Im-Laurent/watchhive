@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import PageHead from '../components/PageHead';
+import { PAGE_META } from '../data/pageMeta';
 import { useShare } from '../hooks/useShare';
 import { SIZE_CHART } from '../data/sizeChart';
 import PageHero from '../components/PageHero';
@@ -84,11 +85,7 @@ export default function FitFinder() {
 
   return (
     <>
-      <PageHead
-        title="Fit Finder"
-        description="손목 단면 너비로 나에게 어울리는 시계 케이스·러그 사이즈를 계산합니다."
-        path="/fit-finder"
-      />
+      <PageHead {...PAGE_META.fitFinder} />
       <PageHero
         title="Fit Finder"
         subtitle="손목에 가장 조화로운 케이스·러그 사이즈를 찾아보세요"
