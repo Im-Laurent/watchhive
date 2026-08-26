@@ -2,7 +2,7 @@
   "name": "watch-hive",
   "private": true,
   "version": "1.0.0",
-  "homepage": "https://www.watch-hive.com/",
+  "homepage": "https://watch-hive.com/",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://www.watch-hive.com/sitemap.xml
+Sitemap: https://watch-hive.com/sitemap.xml

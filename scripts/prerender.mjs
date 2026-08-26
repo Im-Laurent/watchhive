@@ -15,14 +15,15 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
-const SITE = 'https://www.watch-hive.com';
 const OG_IMAGE_WIDTH = 1200;
 const OG_IMAGE_HEIGHT = 630;
 
 const START = '<!-- prerender:meta -->';
 const END = '<!-- /prerender:meta -->';
 
-const PAGE_META = JSON.parse(readFileSync(join(ROOT, 'src/data/pageMeta.json'), 'utf8'));
+const { site: SITE, pages: PAGE_META } = JSON.parse(
+  readFileSync(join(ROOT, 'src/data/pageMeta.json'), 'utf8')
+);
 
 const esc = (s) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { SITE } from '../data/pageMeta';
 
 type Props = {
   title: string;
@@ -9,7 +10,6 @@ type Props = {
   imageAlt?: string;
 };
 
-const SITE = 'https://www.watch-hive.com';
 /** 라우트별 카드가 없을 때 쓰는 대문 이미지 */
 const DEFAULT_IMAGE = '/images/og/home.jpg';
 const OG_IMAGE_WIDTH = 1200;
