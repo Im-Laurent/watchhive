@@ -12,9 +12,11 @@ type DiagnosisRequest = {
   beatErrorMs: number;
 };
 
-// 모델 응답은 실측 약 1.8초. 클라이언트 타임아웃(useDiagnosis.ts의 15초)보다 짧게 유지해서,
+// 모델 응답은 실측 약 1.8초. 클라이언트 타임아웃(useDiagnosis.ts의 24초)보다 짧게 유지해서,
 // 지연 시 워커가 먼저 정리되고 클라이언트는 안내 문구를 띄울 502를 받도록 한다.
-const MODEL_TIMEOUT_MS = 12000;
+// 12초에서 늘렸다 — 느려도 결국 도착하는 응답을 끊어버리는 것보다, 진행 표시를 띄운 채
+// 기다렸다가 받는 편이 낫다.
+const MODEL_TIMEOUT_MS = 20000;
 
 function corsHeaders(origin: string | null, env: Env): Record<string, string> {
   const allowed = env.ALLOWED_ORIGINS.split(',').map((o) => o.trim());
@@ -82,6 +84,20 @@ async function verifyTurnstile(token: string, secretKey: string, remoteIp: strin
   return true;
 }
 
+/**
+ * 프롬프트로 금지해도 모델이 가끔 "안녕하세요!"로 문을 연다. 그럴 때만 첫 인사를 걷어낸다.
+ *
+ * 일부러 좁게 잡았다. 처음엔 "첫 문장부호까지 통째로" 잘랐더니
+ * "안녕하세요라는 인사 없이 바로 설명합니다."의 첫 문장을 통째로 먹었다. 그래서
+ * (1) 인사말 바로 뒤에 한글이 붙으면 인사가 아니라고 보고,
+ * (2) 한글을 만나기 전에 문장부호로 끝나는 '단독 절'일 때만 제거한다.
+ * 애매하면 그냥 두는 쪽을 택한다 — 본문을 깎아먹는 것보다 인사가 남는 편이 낫다.
+ */
+function stripGreeting(text: string): string {
+  const stripped = text.replace(/^\s*(안녕하세요|안녕하십니까|반갑습니다)(?![가-힣])[^가-힣\n]*?[.!?~]+\s*/, '').trim();
+  return stripped.length > 0 ? stripped : text;
+}
+
 function buildPrompt(input: DiagnosisRequest): string {
   return `당신은 취미로 기계식 시계를 조정하는 사람들에게 친절하게 설명해주는 도우미입니다.
 아래는 스마트폰 마이크로 측정한 타임그래퍼 측정값입니다.
@@ -92,6 +108,7 @@ function buildPrompt(input: DiagnosisRequest): string {
 
 참고로 정비된 시계 기준으로는 대략 일차 ±10초/일 이내, Beat Error 0.5ms 이내면 우수한 편으로 봅니다.
 이 수치를 바탕으로 현재 상태를 한국어 2~4문장으로 설명해주세요. 다음 규칙을 반드시 지키세요:
+- "안녕하세요" 같은 인사말이나 서두 없이, 첫 문장부터 곧바로 측정 결과 설명으로 시작하세요.
 - 확정적인 고장 진단이나 특정 부품 교체를 권유하지 마세요.
 - 스마트폰 마이크 측정은 참고용이며 오차가 있을 수 있다는 점을 자연스럽게 포함하세요.
 - 전문 용어는 최소화하고 일반인이 이해하기 쉽게 설명하세요.
@@ -143,7 +160,7 @@ async function generateComment(prompt: string, env: Env): Promise<string> {
       console.error(`model empty response: ${JSON.stringify(data).slice(0, 500)}`);
       throw new Error('model empty response');
     }
-    return text;
+    return stripGreeting(text);
   } finally {
     clearTimeout(timeoutId);
   }
