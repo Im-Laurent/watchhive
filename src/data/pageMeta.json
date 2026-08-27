@@ -10,7 +10,7 @@
     },
     "timegrapher": {
       "title": "Timegrapher",
-      "description": "시계를 마이크에 가까이 대고 소리를 들려주면 BPH, Rate, Beat Error를 측정해주는 무료 온라인 타임그래퍼. 설치 없이 폰 브라우저에서 바로 이용하세요.",
+      "description": "내 시계의 건강 상태를 체크해 보세요. 설치나 광고 없는 무료 서비스",
       "path": "/timegrapher",
       "image": "/images/og/timegrapher.jpg",
       "imageAlt": "타임그래퍼 스탠드에 물려 있는 금장 빈티지 론진 시계"
