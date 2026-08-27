@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useAnalyticsPageview } from '../hooks/useAnalyticsPageview';
 import { useClipboard } from '../hooks/useClipboard';
+import PullToRefresh from './PullToRefresh';
 
 // Home 메뉴는 따로 두지 않고 맨 왼쪽의 Watch HIVE 가 그 자리를 대신한다.
 const HOME = { to: '/', label: 'Watch HIVE', end: true };
@@ -27,6 +28,7 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen bg-gray-100" style={{ fontFamily: "'Rajdhani', 'Noto Sans', sans-serif" }}>
+      <PullToRefresh />
       {/* Header */}
       <header className="bg-white shadow-sm py-4 px-6 md:px-12">
         {/* [Watch HIVE ... 메뉴] — 모바일은 메뉴 자리에 햄버거가 온다.
