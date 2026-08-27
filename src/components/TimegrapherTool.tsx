@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTickCapture } from '../hooks/useTickCapture';
 import { useDiagnosis, type DiagnosisFailure } from '../hooks/useDiagnosis';
 import { useCommunityStats } from '../hooks/useCommunityStats';
@@ -68,26 +68,47 @@ function MetricCard({
   );
 }
 
+/**
+ * 결과 화면 아래에 붙는 안내 섹션의 껍데기.
+ *
+ * "참고해 주세요"와 "읽어주세요"를 각각 따로 만들었더니 항목 카드 처리가 서로 달라졌다
+ * (한쪽만 흰 카드). 같은 자리에 나란히 놓이는 블록이라 껍데기를 하나로 공유한다.
+ */
+function NoteSection({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div className="mt-6 p-5 bg-gray-50 rounded-xl text-gray-700 text-left">
+      <p className="font-bold text-lg mb-3">{title}</p>
+      <div className="space-y-3">{children}</div>
+    </div>
+  );
+}
+
+/** 안내 섹션 안의 항목 하나 */
+function NoteCard({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div className="bg-white rounded-xl p-4 shadow-sm">
+      <p className="font-bold text-gray-800 mb-2">{title}</p>
+      {children}
+    </div>
+  );
+}
+
 /** 숫자만으로는 좋고 나쁨을 알 수 없으므로, 정비 기준과 빈티지에서 통용되는 기준을 나란히 보여준다. */
 function ReferenceNote() {
   return (
-    <div className="mt-6 p-5 bg-gray-50 rounded-xl text-gray-700 text-left">
-      <p className="font-bold text-lg mb-3">📊 참고해 주세요</p>
-      <div className="space-y-3">
-        {REFERENCE_ROWS.map((row) => (
-          <div key={row.metric} className="bg-white rounded-xl p-4 shadow-sm">
-            <p className="font-bold text-gray-800 mb-2">{row.metric}</p>
-            <p className="text-sm text-gray-600 leading-relaxed mb-1">
-              <span className="font-semibold text-gray-700">정비 기준</span> · {row.serviced}
-            </p>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              <span className="font-semibold text-gray-700">빈티지 허용</span> · {row.vintage}
-            </p>
-          </div>
-        ))}
-        <p className="text-sm text-gray-500 leading-relaxed">{REFERENCE_DISCLAIMER}</p>
-      </div>
-    </div>
+    <NoteSection title="📊 참고해 주세요">
+      {REFERENCE_ROWS.map((row) => (
+        <NoteCard key={row.metric} title={row.metric}>
+          <p className="text-sm text-gray-600 leading-relaxed mb-1">
+            <span className="font-semibold text-gray-700">정비 기준</span> · {row.serviced}
+          </p>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            <span className="font-semibold text-gray-700">빈티지 허용</span> · {row.vintage}
+          </p>
+        </NoteCard>
+      ))}
+      <p className="text-sm text-gray-500 leading-relaxed">{REFERENCE_DISCLAIMER}</p>
+    </NoteSection>
   );
 }
 
@@ -199,17 +220,13 @@ function DiagnosisSection({ result }: { result: MeasurementResult }) {
 /** 결과를 어디까지 믿어도 되는지 알려주는 고지. 숫자를 단정적으로 받아들이지 않도록 결과 아래에 둔다. */
 function Disclaimers() {
   return (
-    <div className="mt-6 p-5 bg-gray-50 rounded-xl text-gray-700 text-left">
-      <p className="font-bold text-lg mb-3">💡 읽어주세요</p>
-      <div className="space-y-3">
-        {DISCLAIMERS.map((item) => (
-          <div key={item.title}>
-            <p className="font-bold text-gray-800 mb-1">{item.title}</p>
-            <p className="text-sm text-gray-600 leading-relaxed">{item.body}</p>
-          </div>
-        ))}
-      </div>
-    </div>
+    <NoteSection title="💡 읽어주세요">
+      {DISCLAIMERS.map((item) => (
+        <NoteCard key={item.title} title={item.title}>
+          <p className="text-sm text-gray-600 leading-relaxed">{item.body}</p>
+        </NoteCard>
+      ))}
+    </NoteSection>
   );
 }
 
