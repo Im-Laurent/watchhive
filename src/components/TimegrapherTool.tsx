@@ -457,7 +457,8 @@ function useVibrographRenderer(
     return () => cancelAnimationFrame(frameId);
   }, [active, canvasEl, peaksRef, bphRef]);
 
-  return canvasRef;
+  // canvasEl 도 함께 돌려준다 — 콜백 ref 라 호출부에서 .current 로 엘리먼트를 집을 수 없다.
+  return { canvasRef, canvasEl };
 }
 
 /** 측정 시작 전 안내: 폰의 어느 부분(마이크)을 시계 어디에 대야 하는지 보여주는 그림 가이드. */
@@ -527,6 +528,8 @@ const WARMUP_SECONDS = 3;
 // 워밍업 이후 이 정도만 깨끗하게 측정해도 가장 느린 표준 BPH(12000)에서조차 tick이 40개 이상
 // 쌓여 통계적으로 안정된 값을 낼 수 있다.
 const MEASURE_SECONDS = 15;
+/** 다시 측정할 때 그래프를 화면 위로 올리며 남기는 여백 */
+const GRAPH_SCROLL_MARGIN_PX = 16;
 
 type Phase = 'idle' | 'warming' | 'measuring' | 'stopped' | 'done';
 
@@ -598,12 +601,24 @@ export default function TimegrapherTool() {
   const bphRef = useRef<number | null>(null);
   bphRef.current = result?.bphEstimate.bph ?? null;
 
-  const canvasRef = useVibrographRenderer(status === 'active', peaksRef, bphRef);
+  const { canvasRef, canvasEl } = useVibrographRenderer(status === 'active', peaksRef, bphRef);
 
   const handleManualStop = () => {
     session.cancel();
     stop();
   };
+
+  /**
+   * 결과·중단 화면에서 "다시 측정하기"는 결과 패널·해석·안내를 지나 한참 아래에 있다.
+   * 그대로 다시 시작하면 정작 봐야 할 그래프와 남은 시간이 화면 밖에 있으므로 위로 끌어올린다.
+   */
+  const handleRestart = useCallback(() => {
+    start();
+    if (!canvasEl) return;
+    const top = canvasEl.getBoundingClientRect().top + window.scrollY - GRAPH_SCROLL_MARGIN_PX;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: Math.max(0, top), behavior: reduceMotion ? 'auto' : 'smooth' });
+  }, [start, canvasEl]);
 
   const { copyToClipboard: copyLinkToClipboard, copyMessage: linkCopyMessage } = useClipboard();
   const copyLink = useCallback(
@@ -712,7 +727,7 @@ export default function TimegrapherTool() {
           {isDone && (
             <button
               type="button"
-              onClick={start}
+              onClick={handleRestart}
               className={`mt-3 ${SECONDARY_BUTTON}`}
             >
               다시 측정하기
@@ -740,7 +755,7 @@ export default function TimegrapherTool() {
       {isStopped && (
         <button
           type="button"
-          onClick={start}
+          onClick={handleRestart}
           className={`mt-6 ${PRIMARY_BUTTON}`}
         >
           다시 측정하기
