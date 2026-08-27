@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTickCapture } from '../hooks/useTickCapture';
-import { useDiagnosis } from '../hooks/useDiagnosis';
+import { useDiagnosis, type DiagnosisFailure } from '../hooks/useDiagnosis';
 import { useCommunityStats } from '../hooks/useCommunityStats';
 import { useClipboard } from '../hooks/useClipboard';
 import { estimateBph, type BphEstimate } from '../lib/timegrapher/bphEstimator';
@@ -71,6 +71,66 @@ function ReferenceNote() {
   );
 }
 
+/** 실패 원인마다 사용자가 할 수 있는 행동이 달라서 안내를 나눠 둔다. */
+const DIAGNOSIS_FAILURE_MESSAGE: Record<DiagnosisFailure, string> = {
+  config: '해석 기능이 아직 준비되지 않았어요. 조금 뒤에 다시 들러주세요.',
+  verification:
+    '자동 접속이 아닌지 확인하는 단계에서 막혔어요. 잠시 후 다시 눌러보시고, 계속 막히면 다른 브라우저에서 시도해 주세요.',
+  timeout: '해석이 예상보다 오래 걸려서 중간에 멈췄어요. 잠시 후 다시 시도해 주세요.',
+  server:
+    '무료 서버를 쓰고 있어 트래픽이 몰리거나 한 사람이 여러 번 시도하는 경우 진단 결과 해석이 원활하지 않을 수 있어요ㅠㅠ 다음에 다시 시도해 주세요.',
+};
+
+/** 해석을 기다리는 동안 보여주는 진행 표시. 답변이 들어설 자리를 미리 잡아 화면이 덜 튀게 한다. */
+function DiagnosisPending({ status }: { status: 'verifying' | 'requesting' }) {
+  const [waitedLong, setWaitedLong] = useState(false);
+
+  useEffect(() => {
+    // 몇 초 넘게 걸리면 "멈춘 건가?" 싶어지므로, 그때부터 이유를 한 줄 덧붙인다.
+    const id = setTimeout(() => setWaitedLong(true), 6000);
+    return () => clearTimeout(id);
+  }, []);
+
+  return (
+    <div
+      className="rounded-2xl border border-blue-200 bg-blue-50 p-5"
+      role="status"
+      aria-live="polite"
+    >
+      <div className="flex items-center gap-3">
+        <svg
+          className="animate-spin motion-reduce:animate-none h-5 w-5 shrink-0 text-blue-500"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+        >
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+          />
+        </svg>
+        <p className="text-base text-gray-700">
+          {status === 'verifying' ? '접속을 확인하고 있어요…' : '측정값을 해석하고 있어요…'}
+        </p>
+      </div>
+
+      <div className="mt-4 space-y-2.5 animate-pulse motion-reduce:animate-none" aria-hidden="true">
+        <div className="h-3 rounded-full bg-blue-200" />
+        <div className="h-3 rounded-full bg-blue-200" />
+        <div className="h-3 w-2/3 rounded-full bg-blue-200" />
+      </div>
+
+      {waitedLong && (
+        <p className="mt-4 text-sm text-gray-500 leading-relaxed">
+          무료 서버를 쓰고 있어 조금 걸릴 수 있어요. 잠시만 기다려 주세요.
+        </p>
+      )}
+    </div>
+  );
+}
+
 /** 측정 완료 후 "결과 해석하기" 버튼/Turnstile 위젯/결과·실패 안내를 보여준다. */
 function DiagnosisSection({ result }: { result: MeasurementResult }) {
   const diagnosis = useDiagnosis();
@@ -86,18 +146,19 @@ function DiagnosisSection({ result }: { result: MeasurementResult }) {
           숨기면 위젯 동작이 깨질 수 있어(공식 가이드) 요소 자체는 레이아웃에 남겨둔다. */}
       <div ref={diagnosis.widgetContainerRef} className="flex justify-center empty:hidden" />
 
-      {diagnosis.status === 'idle' && canDiagnose && (
+      {/* 실패했을 때도 버튼을 남긴다. 없으면 다시 측정하지 않는 한 재시도할 방법이 없다. */}
+      {(diagnosis.status === 'idle' || diagnosis.status === 'failed') && canDiagnose && (
         <button
           type="button"
           onClick={() => diagnosis.requestDiagnosis({ bph, rateSecondsPerDay: secondsPerDay, beatErrorMs })}
-          className={PRIMARY_BUTTON}
+          className={diagnosis.status === 'failed' ? SECONDARY_BUTTON : PRIMARY_BUTTON}
         >
-          결과 해석하기
+          {diagnosis.status === 'failed' ? '다시 해석하기' : '결과 해석하기'}
         </button>
       )}
 
       {(diagnosis.status === 'verifying' || diagnosis.status === 'requesting') && (
-        <p className="text-base text-gray-500 text-center py-3.5">해석 중이에요…</p>
+        <DiagnosisPending status={diagnosis.status} />
       )}
 
       {diagnosis.status === 'success' && diagnosis.comment && (
@@ -106,10 +167,9 @@ function DiagnosisSection({ result }: { result: MeasurementResult }) {
         </div>
       )}
 
-      {diagnosis.status === 'failed' && (
-        <p className="text-sm text-gray-500 text-center leading-relaxed py-3">
-          무료 서버를 쓰고 있어 트래픽이 몰리거나 한 사람이 여러 번 시도하는 경우 진단 결과 해석이 원활하지 않을 수
-          있어요ㅠㅠ 다음에 다시 시도해 주세요.
+      {diagnosis.status === 'failed' && diagnosis.failure && (
+        <p className="mt-3 text-sm text-gray-500 text-center leading-relaxed">
+          {DIAGNOSIS_FAILURE_MESSAGE[diagnosis.failure]}
         </p>
       )}
     </div>
