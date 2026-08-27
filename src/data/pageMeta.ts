@@ -10,6 +10,12 @@ import meta from './pageMeta.json';
 export type PageMeta = {
   title: string;
   description: string;
+  /**
+   * 링크 미리보기(og:description·twitter:description) 전용 문구.
+   * description 은 구글 검색 스니펫으로도 쓰여 키워드가 필요한 반면, 미리보기 카드는
+   * 짧고 직관적인 한 문장이 낫다. 둘이 갈리는 페이지에만 넣고, 없으면 description 을 쓴다.
+   */
+  ogDescription?: string;
   path: string;
   image: string;
   imageAlt: string;

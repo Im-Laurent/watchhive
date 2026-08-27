@@ -33,19 +33,21 @@ function metaBlock(meta) {
   const fullTitle = meta.title === 'Watch HIVE' ? meta.title : `${meta.title} · Watch HIVE`;
   const url = `${SITE}${meta.path}`;
   const image = `${SITE}${meta.image}`;
+  // description 은 구글 검색 스니펫, preview 는 카카오톡·페이스북 카드에 뜨는 문구다.
+  const preview = meta.ogDescription || meta.description;
   return [
     `<title data-prerendered>${esc(fullTitle)}</title>`,
     `<meta data-prerendered name="description" content="${esc(meta.description)}" />`,
     `<link data-prerendered rel="canonical" href="${esc(url)}" />`,
     `<meta data-prerendered property="og:title" content="${esc(fullTitle)}" />`,
-    `<meta data-prerendered property="og:description" content="${esc(meta.description)}" />`,
+    `<meta data-prerendered property="og:description" content="${esc(preview)}" />`,
     `<meta data-prerendered property="og:url" content="${esc(url)}" />`,
     `<meta data-prerendered property="og:image" content="${esc(image)}" />`,
     `<meta data-prerendered property="og:image:width" content="${OG_IMAGE_WIDTH}" />`,
     `<meta data-prerendered property="og:image:height" content="${OG_IMAGE_HEIGHT}" />`,
     `<meta data-prerendered property="og:image:alt" content="${esc(meta.imageAlt)}" />`,
     `<meta data-prerendered name="twitter:title" content="${esc(fullTitle)}" />`,
-    `<meta data-prerendered name="twitter:description" content="${esc(meta.description)}" />`,
+    `<meta data-prerendered name="twitter:description" content="${esc(preview)}" />`,
     `<meta data-prerendered name="twitter:image" content="${esc(image)}" />`,
     `<meta data-prerendered name="twitter:image:alt" content="${esc(meta.imageAlt)}" />`,
   ]
