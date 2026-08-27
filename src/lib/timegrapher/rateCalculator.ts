@@ -1,9 +1,23 @@
 export type RateEstimate = {
   secondsPerDay: number | null;
   sampleCount: number;
+  /** 적합선에서 각 tick이 벗어난 정도(중앙값, ms). 주변 소음이 섞일수록 커진다. */
+  jitterMs: number | null;
+  confidence: 'ok' | 'low';
 };
 
 const MIN_PEAKS_FOR_RATE = 8;
+
+/**
+ * 이 값을 넘으면 tick 타이밍이 너무 흔들려 하루 오차를 믿기 어렵다고 본다.
+ *
+ * aubio의 hop(~11ms) 때문에 검출 시각 자체에 ±5.5ms 정도의 양자화 오차가 깔려 있어,
+ * 잔차가 그 절반 수준이면 "검출기 정밀도만큼 깨끗한" 상태다. 실제 녹음 두 종으로 재보니
+ * 조용한 환경의 원본이 1.6ms·3.8ms였고, 오검출·누락·지터를 섞어 소음을 흉내내자
+ * 6.6~7.7ms(보통 소음) → 16.8~18.3ms(시끄러움)로 단조롭게 올라갔다. 보통 소음 구간에서
+ * 이미 하루 오차가 15초/일가량 밀렸으므로, 그 구간부터 경고하도록 6ms에 선을 둔다.
+ */
+const MAX_CLEAN_JITTER_MS = 6;
 
 function median(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -26,7 +40,7 @@ function median(values: number[]): number {
  */
 export function calculateRate(peakTimestamps: number[], bph: number | null): RateEstimate {
   if (!bph || peakTimestamps.length < MIN_PEAKS_FOR_RATE) {
-    return { secondsPerDay: null, sampleCount: 0 };
+    return { secondsPerDay: null, sampleCount: 0, jitterMs: null, confidence: 'low' };
   }
 
   const sorted = [...peakTimestamps].sort((a, b) => a - b);
@@ -43,11 +57,21 @@ export function calculateRate(peakTimestamps: number[], bph: number | null): Rat
     }
   }
   if (slopes.length < MIN_PEAKS_FOR_RATE - 1) {
-    return { secondsPerDay: null, sampleCount: 0 };
+    return { secondsPerDay: null, sampleCount: 0, jitterMs: null, confidence: 'low' };
   }
 
   const actualSecondsPerBeat = median(slopes);
   const secondsPerDay = ((theoreticalInterval - actualSecondsPerBeat) / theoreticalInterval) * 86400;
 
-  return { secondsPerDay, sampleCount: sorted.length };
+  // 추정한 비트 간격으로 되돌려 각 tick이 적합선에서 얼마나 벗어났는지 본다. 값 자체가
+  // 아니라 "그 값을 얼마나 믿을 수 있는지"를 재는 지표다 — 소음이 섞이면 여기가 먼저 커진다.
+  const residuals = sorted.map((t, i) => Math.abs(t - first - beatIndices[i] * actualSecondsPerBeat));
+  const jitterMs = median(residuals) * 1000;
+
+  return {
+    secondsPerDay,
+    sampleCount: sorted.length,
+    jitterMs,
+    confidence: jitterMs > MAX_CLEAN_JITTER_MS ? 'low' : 'ok',
+  };
 }

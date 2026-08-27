@@ -40,12 +40,12 @@ export type ReferenceRow = {
 
 export const REFERENCE_ROWS: ReferenceRow[] = [
   {
-    metric: 'Rate · 하루 오차',
+    metric: '일오차 (Rate)',
     serviced: '±10초/일 이내면 우수. 크로노미터(COSC) 인증 기준은 -4 ~ +6초/일.',
     vintage: '±20초/일 이내로 꾸준하기만 하면 실사용에 무리 없음.',
   },
   {
-    metric: 'Beat Error · 비트 오차',
+    metric: '비트에러 (Beat Error)',
     serviced: '0.5ms 이내면 우수, 1.0ms 이내면 실사용에 무리 없음.',
     vintage: '오래 써서 마모된 개체는 1~2ms로도 문제없이 쓰이는 경우가 흔함.',
   },
@@ -79,5 +79,10 @@ export const DISCLAIMERS: Disclaimer[] = [
   },
 ];
 
-export const LOW_CONFIDENCE_HINT =
-  'tick 소리가 또렷하게 잡히지 않아 BPH 추정이 흔들렸어요. 조용한 곳에서 폰을 시계에 더 가까이 대고 다시 측정해 보세요.';
+/**
+ * 어떤 값이 흔들렸는지 짚어주고 조치는 하나로 안내한다.
+ * 예전에는 진동수만 경고했는데, 일오차·비트에러도 주변 소음에 똑같이 흔들린다.
+ */
+export function lowConfidenceHint(metrics: string[]): string {
+  return `주변 소음이 섞여 ${metrics.join(' · ')} 값이 흔들렸어요. 조용한 곳에서 폰을 시계에 더 가까이 대고 다시 측정해 보세요.`;
+}

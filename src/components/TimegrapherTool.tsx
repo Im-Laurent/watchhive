@@ -9,7 +9,7 @@ import { calculateBeatError, type BeatErrorEstimate } from '../lib/timegrapher/b
 import {
   DISCLAIMERS,
   GRADE_LABEL,
-  LOW_CONFIDENCE_HINT,
+  lowConfidenceHint,
   REFERENCE_DISCLAIMER,
   REFERENCE_ROWS,
   judgeBeatError,
@@ -17,6 +17,7 @@ import {
   type Grade,
 } from '../lib/timegrapher/referenceRanges';
 import RecommendedVideo from './RecommendedVideo';
+import { setPullToRefreshLocked } from '../lib/pullToRefreshLock';
 
 // 배지·버튼·결과 패널 색은 Year Finder / Fit Finder에서 쓰는 팔레트를 그대로 따른다.
 const GRADE_STYLE: Record<Grade, string> = {
@@ -30,6 +31,9 @@ const PRIMARY_BUTTON =
   'w-full bg-gray-800 hover:bg-gray-700 text-gray-100 font-bold py-3.5 px-4 rounded-full shadow-md transition';
 const SECONDARY_BUTTON =
   'w-full bg-white hover:bg-gray-50 text-gray-700 font-bold py-3.5 px-4 rounded-full border-2 border-gray-300 transition';
+
+/** 측정이 끝났는데도 값이 없으면 계속 "측정 중"으로 두지 않는다 — 끝났지만 못 구했다는 뜻이다. */
+const MISSING_VALUE = (isDone: boolean) => (isDone ? '—' : '측정 중');
 
 /** 측정값 카드 하나. 판정 배지는 값이 확정된 뒤에만 붙인다(측정 중에는 등급이 계속 흔들려 오히려 헷갈림). */
 function MetricCard({
@@ -481,8 +485,8 @@ type MeasurementResult = {
 
 const EMPTY_RESULT: MeasurementResult = {
   bphEstimate: { bph: null, rawIntervalSeconds: null, confidence: 'low' },
-  rate: { secondsPerDay: null, sampleCount: 0 },
-  beatError: { ms: null, sampleCount: 0 },
+  rate: { secondsPerDay: null, sampleCount: 0, jitterMs: null, confidence: 'low' },
+  beatError: { ms: null, sampleCount: 0, droppedRatio: null, confidence: 'low' },
 };
 
 function computeFromPeaks(peaks: number[]): MeasurementResult {
@@ -532,6 +536,9 @@ function useMeasurementSession(
     setPhase('warming');
     setElapsed(0);
     setFinalResult(null);
+    // 이전 측정의 수치가 live에 남아 있으면, 아직 새 값이 없는 워밍업 3초 동안 옛 값이 그대로
+    // 보인다. 새 측정을 시작하는 순간 화면의 숫자도 "측정 중"으로 되돌린다.
+    setLive(EMPTY_RESULT);
     const startedAt = Date.now();
 
     const id = setInterval(() => {
@@ -588,9 +595,23 @@ export default function TimegrapherTool() {
   );
 
   const showCapturing = session.phase === 'warming' || session.phase === 'measuring';
+
+  // 측정 중에 화면을 잘못 건드려 새로고침되면 15초짜리 측정이 통째로 날아간다.
+  useEffect(() => {
+    setPullToRefreshLocked(showCapturing);
+    return () => setPullToRefreshLocked(false);
+  }, [showCapturing]);
   const isDone = session.phase === 'done';
   const isStopped = session.phase === 'stopped';
   const measureProgress = Math.max(0, Math.min(MEASURE_SECONDS, Math.floor(session.elapsed - WARMUP_SECONDS)));
+
+  // 소음 때문에 흔들린 지표를 모은다. 값이 아예 안 나온 경우(null)가 가장 나쁜 경우이므로
+  // 함께 넣는다 — 그러지 않으면 소음이 심할수록 오히려 경고가 사라지는 꼴이 된다.
+  const shakyMetrics = [
+    result?.bphEstimate.bph == null || result.bphEstimate.confidence === 'low' ? '진동수' : null,
+    result?.rate.secondsPerDay == null || result.rate.confidence === 'low' ? '일오차' : null,
+    result?.beatError.ms == null || result.beatError.confidence === 'low' ? '비트에러' : null,
+  ].filter((m): m is string => m !== null);
 
   return (
     <div className="bg-white rounded-2xl shadow-md p-6 md:p-8 mb-8 text-center">
@@ -642,29 +663,29 @@ export default function TimegrapherTool() {
             }`}
           >
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
-            <MetricCard label="BPH" value={result?.bphEstimate.bph?.toLocaleString() ?? '측정 중'} />
+            <MetricCard label="진동수" value={result?.bphEstimate.bph?.toLocaleString() ?? MISSING_VALUE(isDone)} />
             <MetricCard
-              label="Rate"
+              label="일오차"
               value={
                 result?.rate.secondsPerDay != null
                   ? `${result.rate.secondsPerDay > 0 ? '+' : ''}${result.rate.secondsPerDay.toFixed(1)}`
-                  : '측정 중'
+                  : MISSING_VALUE(isDone)
               }
               unit={result?.rate.secondsPerDay != null ? 's/d' : undefined}
               grade={isDone && result?.rate.secondsPerDay != null ? judgeRate(result.rate.secondsPerDay) : undefined}
             />
             <MetricCard
-              label="Beat Error"
-              value={result?.beatError.ms != null ? result.beatError.ms.toFixed(1) : '측정 중'}
+              label="비트에러"
+              value={result?.beatError.ms != null ? result.beatError.ms.toFixed(1) : MISSING_VALUE(isDone)}
               unit={result?.beatError.ms != null ? 'ms' : undefined}
               grade={isDone && result?.beatError.ms != null ? judgeBeatError(result.beatError.ms) : undefined}
             />
           </div>
           </div>
 
-          {isDone && result?.bphEstimate.confidence === 'low' && (
+          {isDone && shakyMetrics.length > 0 && (
             <p className="mt-4 text-left text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-4 leading-relaxed">
-              {LOW_CONFIDENCE_HINT}
+              {lowConfidenceHint(shakyMetrics)}
             </p>
           )}
 

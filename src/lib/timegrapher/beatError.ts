@@ -1,10 +1,22 @@
 export type BeatErrorEstimate = {
   ms: number | null;
   sampleCount: number;
+  /** 이상치로 버린 간격의 비율. 오검출·누락이 많을수록(=소음이 심할수록) 커진다. */
+  droppedRatio: number | null;
+  confidence: 'ok' | 'low';
 };
 
 const MIN_PEAKS_FOR_BEAT_ERROR = 20;
 const MIN_GROUP_SAMPLES = 8;
+
+/**
+ * 버린 간격이 이 비율을 넘으면 짝/홀 교대 자체가 자주 끊겼다는 뜻이라 값을 믿기 어렵다.
+ *
+ * 실제 녹음 두 종으로 재보니 조용한 환경 원본이 0.01·0.15였고, 소음을 흉내내자
+ * 0.17~0.26(약간) → 0.31~0.36(보통) → 0.45~0.48(시끄러움)로 올라갔다. 조용한 원본
+ * 하나가 이미 0.15라 그보다 넉넉히 위, 보통 소음 구간은 잡히도록 0.3에 선을 둔다.
+ */
+const MAX_CLEAN_DROP_RATIO = 0.3;
 
 function median(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -21,7 +33,7 @@ function median(values: number[]): number {
  */
 export function calculateBeatError(peakTimestamps: number[]): BeatErrorEstimate {
   if (peakTimestamps.length < MIN_PEAKS_FOR_BEAT_ERROR) {
-    return { ms: null, sampleCount: 0 };
+    return { ms: null, sampleCount: 0, droppedRatio: null, confidence: 'low' };
   }
 
   const sorted = [...peakTimestamps].sort((a, b) => a - b);
@@ -33,20 +45,28 @@ export function calculateBeatError(peakTimestamps: number[]): BeatErrorEstimate 
   const roughMedian = median(intervals);
   const groups: [number[], number[]] = [[], []];
   let parity: 0 | 1 = 0;
+  let dropped = 0;
   for (const interval of intervals) {
     if (interval < roughMedian * 0.6 || interval > roughMedian * 1.6) {
+      dropped++;
       continue; // 이상치는 버리고, 짝/홀 순서를 깨지 않은 채 다음 간격으로 넘어간다
     }
     groups[parity].push(interval);
     parity = parity === 0 ? 1 : 0;
   }
+  const droppedRatio = dropped / intervals.length;
 
   if (groups[0].length < MIN_GROUP_SAMPLES || groups[1].length < MIN_GROUP_SAMPLES) {
-    return { ms: null, sampleCount: 0 };
+    return { ms: null, sampleCount: 0, droppedRatio, confidence: 'low' };
   }
 
   const avg = (arr: number[]) => arr.reduce((sum, v) => sum + v, 0) / arr.length;
   const beatErrorMs = Math.abs(avg(groups[0]) - avg(groups[1])) * 1000;
 
-  return { ms: beatErrorMs, sampleCount: groups[0].length + groups[1].length };
+  return {
+    ms: beatErrorMs,
+    sampleCount: groups[0].length + groups[1].length,
+    droppedRatio,
+    confidence: droppedRatio > MAX_CLEAN_DROP_RATIO ? 'low' : 'ok',
+  };
 }
