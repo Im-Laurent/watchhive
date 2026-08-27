@@ -81,3 +81,28 @@ body {
     animation: none;
   }
 }
+
+/* Timegrapher 해석 대기 표시.
+   Tailwind CDN 은 화면에 처음 나타난 클래스를 런타임에 뒤늦게 만들어 낸다(실측: keyframes 가
+   생기기까지 한 박자 걸림). 이 패널은 몇 초만 떠 있다가 사라져서 그 사이 애니메이션이 붙지
+   않은 채 지나갈 수 있으므로, 번들 CSS 에 직접 둬서 뜨는 즉시 돌게 한다. */
+@keyframes tg-spin {
+  to { transform: rotate(360deg); }
+}
+.tg-spin {
+  animation: tg-spin 1s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+@keyframes tg-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+.tg-pulse {
+  animation: tg-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tg-spin,
+  .tg-pulse { animation: none; }
+}

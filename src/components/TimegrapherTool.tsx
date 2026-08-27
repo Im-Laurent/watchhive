@@ -32,11 +32,27 @@ const SECONDARY_BUTTON =
   'w-full bg-white hover:bg-gray-50 text-gray-700 font-bold py-3.5 px-4 rounded-full border-2 border-gray-300 transition';
 
 /** 측정값 카드 하나. 판정 배지는 값이 확정된 뒤에만 붙인다(측정 중에는 등급이 계속 흔들려 오히려 헷갈림). */
-function MetricCard({ label, value, grade }: { label: string; value: string; grade?: Grade }) {
+function MetricCard({
+  label,
+  value,
+  unit,
+  grade,
+}: {
+  label: string;
+  value: string;
+  unit?: string;
+  grade?: Grade;
+}) {
   return (
-    <div className="bg-white rounded-xl p-3 sm:p-4 text-center shadow-sm">
+    <div className="bg-white rounded-xl p-1.5 sm:p-4 text-center shadow-sm">
       <p className="text-xs sm:text-sm text-gray-500 mb-1">{label}</p>
-      <p className="text-xl sm:text-2xl font-bold text-blue-700">{value}</p>
+      {/* 좁은 폰에서 "-48.9s/d" 가 카드 밖으로 삐져나가던 자리다. 3단 그리드라 카드 하나가
+          100px 남짓인데 단위까지 같은 크기로 붙으면 넘친다. 단위를 작게 떼고, 글자 크기를
+          화면 폭에 맞춰 줄인다. */}
+      <p className="font-bold text-blue-700 whitespace-nowrap tracking-tight text-[clamp(0.8rem,4.4vw,1.5rem)]">
+        {value}
+        {unit && <span className="ml-0.5 text-[0.62em] font-semibold">{unit}</span>}
+      </p>
       {grade && (
         <span
           className={`inline-block mt-2 text-[11px] sm:text-xs font-bold tracking-wider rounded-full px-2 sm:px-3 py-0.5 sm:py-1 ${GRADE_STYLE[grade]}`}
@@ -99,7 +115,7 @@ function DiagnosisPending({ status }: { status: 'verifying' | 'requesting' }) {
     >
       <div className="flex items-center gap-3">
         <svg
-          className="animate-spin motion-reduce:animate-none h-5 w-5 shrink-0 text-blue-500"
+          className="tg-spin h-5 w-5 shrink-0 text-blue-500"
           viewBox="0 0 24 24"
           fill="none"
           aria-hidden="true"
@@ -116,7 +132,7 @@ function DiagnosisPending({ status }: { status: 'verifying' | 'requesting' }) {
         </p>
       </div>
 
-      <div className="mt-4 space-y-2.5 animate-pulse motion-reduce:animate-none" aria-hidden="true">
+      <div className="tg-pulse mt-4 space-y-2.5" aria-hidden="true">
         <div className="h-3 rounded-full bg-blue-200" />
         <div className="h-3 rounded-full bg-blue-200" />
         <div className="h-3 w-2/3 rounded-full bg-blue-200" />
@@ -625,20 +641,22 @@ export default function TimegrapherTool() {
               isDone ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-gray-50'
             }`}
           >
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
             <MetricCard label="BPH" value={result?.bphEstimate.bph?.toLocaleString() ?? '측정 중'} />
             <MetricCard
               label="Rate"
               value={
                 result?.rate.secondsPerDay != null
-                  ? `${result.rate.secondsPerDay > 0 ? '+' : ''}${result.rate.secondsPerDay.toFixed(1)}s/d`
+                  ? `${result.rate.secondsPerDay > 0 ? '+' : ''}${result.rate.secondsPerDay.toFixed(1)}`
                   : '측정 중'
               }
+              unit={result?.rate.secondsPerDay != null ? 's/d' : undefined}
               grade={isDone && result?.rate.secondsPerDay != null ? judgeRate(result.rate.secondsPerDay) : undefined}
             />
             <MetricCard
               label="Beat Error"
-              value={result?.beatError.ms != null ? `${result.beatError.ms.toFixed(1)}ms` : '측정 중'}
+              value={result?.beatError.ms != null ? result.beatError.ms.toFixed(1) : '측정 중'}
+              unit={result?.beatError.ms != null ? 'ms' : undefined}
               grade={isDone && result?.beatError.ms != null ? judgeBeatError(result.beatError.ms) : undefined}
             />
           </div>
