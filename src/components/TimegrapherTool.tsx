@@ -17,6 +17,7 @@ import {
   type Grade,
 } from '../lib/timegrapher/referenceRanges';
 import RecommendedVideo from './RecommendedVideo';
+import { PAGE_META, SITE } from '../data/pageMeta';
 import { setPullToRefreshLocked } from '../lib/pullToRefreshLock';
 
 // 배지·버튼·결과 패널 색은 Year Finder / Fit Finder에서 쓰는 팔레트를 그대로 따른다.
@@ -31,6 +32,30 @@ const PRIMARY_BUTTON =
   'w-full bg-gray-800 hover:bg-gray-700 text-gray-100 font-bold py-3.5 px-4 rounded-full shadow-md transition';
 const SECONDARY_BUTTON =
   'w-full bg-white hover:bg-gray-50 text-gray-700 font-bold py-3.5 px-4 rounded-full border-2 border-gray-300 transition';
+
+/**
+ * PC로 들어온 사람을 폰으로 넘기기 위한 QR. 인코딩된 주소는 `SITE + PAGE_META.timegrapher.path`
+ * (= https://watch-hive.com/timegrapher)이고, 그 문자열로 미리 만들어 커밋해 둔 정적 SVG다.
+ * 런타임에 `window.location.href`로 만들지 않는 이유는 두 가지다 — QR 인코더를 번들에 넣을 필요가
+ * 없고, 로컬/미리보기에서 열어도 폰에서 실제로 열리는 운영 주소가 나온다. 라우트나 도메인을 바꾸면
+ * 이 SVG도 다시 만들어야 한다 — 다시 만드는 명령은 SVG 파일 첫 줄 주석에 적어 뒀다.
+ *
+ * 가운데 로고 배지가 모듈 일부를 덮으므로 SVG는 오류정정 H(30% 복원)로 뽑았다. 배지가 가리는 면적은
+ * 전체 1089모듈 중 8% 남짓이라 여유가 충분하다(열화 조건까지 디코딩으로 확인했다). 배지를 SVG 안에
+ * 굽지 않고 HTML로 얹는 이유는, QR SVG는 순수한 QR로 남겨 두고 배지 크기·색만 따로 손볼 수 있어서다.
+ *
+ * 로고는 배경이 투명한 PNG라 반드시 불투명한 배지 위에 올린다 — 그냥 얹으면 로고 안쪽으로 QR 모듈이
+ * 비쳐 보인다.
+ */
+const QR_IMAGE = '/images/timegrapher-qr.svg';
+const QR_BADGE_LOGO = '/logo512.png';
+
+/**
+ * 오류정정을 H로 올리면서 모듈이 29→33칸으로 늘었다. 176px 그대로 두면 모듈 하나가 4.3px까지
+ * 작아지므로, 예전과 같은 4.7px을 유지하도록 폭을 192px로 키운다(좁은 폰 320px에서도 카드 안쪽
+ * 224px 안에 들어간다).
+ */
+const QR_SIZE_PX = 192;
 
 /** 측정이 끝났는데도 값이 없으면 계속 "측정 중"으로 두지 않는다 — 끝났지만 못 구했다는 뜻이다. */
 const MISSING_VALUE = (isDone: boolean) => (isDone ? '—' : '측정 중');
@@ -620,12 +645,6 @@ export default function TimegrapherTool() {
     window.scrollTo({ top: Math.max(0, top), behavior: reduceMotion ? 'auto' : 'smooth' });
   }, [start, canvasEl]);
 
-  const { copyToClipboard: copyLinkToClipboard, copyMessage: linkCopyMessage } = useClipboard();
-  const copyLink = useCallback(
-    () => copyLinkToClipboard(window.location.href, '링크가 클립보드에 복사되었어요!'),
-    [copyLinkToClipboard]
-  );
-
   const showCapturing = session.phase === 'warming' || session.phase === 'measuring';
 
   // 측정 중에 화면을 잘못 건드려 새로고침되면 15초짜리 측정이 통째로 날아간다.
@@ -775,15 +794,26 @@ export default function TimegrapherTool() {
 
       {/* 마이크가 없거나 권한을 주기 어려운 PC에서 들어온 사람을 폰으로 넘겨주기 위한 경로. */}
       {!showCapturing && !isStopped && !isDone && (
-        <>
-          <button type="button" onClick={copyLink} className={`mt-3 ${SECONDARY_BUTTON}`}>
-            링크 복사
-          </button>
-          <p className="mt-3 text-sm text-gray-500 leading-relaxed">
-            PC에서 접속하셨다면 링크 복사 후 스마트폰 브라우저로 진행해 주세요
+        <div className="mt-6">
+          <p className="text-sm text-gray-500 leading-relaxed">
+            스마트폰에서 접근해 주세요 (QR코드 또는 하단 공유 링크)
           </p>
-          {linkCopyMessage && <p className="mt-2 text-sm text-blue-600">{linkCopyMessage}</p>}
-        </>
+          <div
+            className="relative mx-auto mt-4 rounded-xl border border-gray-200 bg-white"
+            style={{ width: QR_SIZE_PX, height: QR_SIZE_PX }}
+          >
+            <img
+              src={QR_IMAGE}
+              alt={`${SITE}${PAGE_META.timegrapher.path} 주소로 이동하는 QR코드`}
+              width={QR_SIZE_PX}
+              height={QR_SIZE_PX}
+              className="block h-full w-full"
+            />
+            <span className="absolute left-1/2 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-lg bg-gray-800">
+              <img src={QR_BADGE_LOGO} alt="" width={32} height={32} className="h-8 w-8" />
+            </span>
+          </div>
+        </div>
       )}
     </div>
   );
