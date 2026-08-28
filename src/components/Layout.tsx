@@ -96,14 +96,19 @@ export default function Layout() {
 
       {/* Footer */}
       <footer className="bg-gray-800 text-gray-300 py-8 px-6 md:px-12 rounded-t-lg">
-        <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* 모바일에서는 3단이 1단으로 접히면서 푸터만 화면 하나를 차지했다(320px에서 91%).
+            블록 간격·제목 여백을 좁히고, 아래 두 그룹을 각각 가로로 펴서 높이를 줄인다.
+            md 이상은 예전 그대로다. */}
+        <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           <div>
-            <h4 className="text-white font-semibold mb-4">Watch HIVE</h4>
+            <h4 className="text-white font-semibold mb-3 md:mb-4">Watch HIVE</h4>
             <p className="text-sm">A space for vintage watch enthusiasts. Stay a while and enjoy your time here.</p>
           </div>
           <div>
-            <h4 className="text-white font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2 text-sm">
+            <h4 className="text-white font-semibold mb-3 md:mb-4">Quick Links</h4>
+            {/* 6개를 세로로 쌓으면 여기서만 200px을 먹는다. 모바일은 2열(행 우선이라 헤더와
+                같은 순서로 읽힌다), 데스크톱은 3단 그리드 안이라 예전처럼 1열로 둔다. */}
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm md:block md:space-y-2">
               {[HOME, ...NAV].map((item) => (
                 <li key={item.to}>
                   <Link to={item.to} className="hover:text-white">{item.label}</Link>
@@ -112,25 +117,32 @@ export default function Layout() {
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-semibold mb-4">Follow Me</h4>
-            <div className="flex space-x-4 mb-6">
-              <a href="https://www.youtube.com/@seemoung" target="_blank" rel="noopener noreferrer" className="hover:text-white" aria-label="YouTube">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none" /></svg>
-              </a>
-              <a href="https://www.instagram.com/seemoung_vtg" target="_blank" rel="noopener noreferrer" className="hover:text-white" aria-label="Instagram">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" x2="17.51" y1="6.5" y2="6.5" /></svg>
-              </a>
-            </div>
-            <h4 className="text-white font-semibold mb-4">Contact Me</h4>
-            <div className="flex space-x-4">
-              <button onClick={copyEmail} className="hover:text-white focus:outline-none" aria-label="이메일 복사">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
-              </button>
+            {/* 아이콘 3개를 위해 제목 두 개가 세로로 서 있었다. 모바일에서만 나란히 놓는다. */}
+            <div className="grid grid-cols-2 gap-4 md:block">
+              <div>
+                <h4 className="text-white font-semibold mb-3 md:mb-4">Follow Me</h4>
+                <div className="flex space-x-4 md:mb-6">
+                  <a href="https://www.youtube.com/@seemoung" target="_blank" rel="noopener noreferrer" className="hover:text-white" aria-label="YouTube">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none" /></svg>
+                  </a>
+                  <a href="https://www.instagram.com/seemoung_vtg" target="_blank" rel="noopener noreferrer" className="hover:text-white" aria-label="Instagram">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" x2="17.51" y1="6.5" y2="6.5" /></svg>
+                  </a>
+                </div>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-3 md:mb-4">Contact Me</h4>
+                <div className="flex space-x-4">
+                  <button onClick={copyEmail} className="hover:text-white focus:outline-none" aria-label="이메일 복사">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
+                  </button>
+                </div>
+              </div>
             </div>
             {copyMessage && <div className="mt-2 p-2 bg-green-100 border-l-4 border-green-500 text-green-800 rounded-md text-sm">{copyMessage}</div>}
           </div>
         </div>
-        <div className="border-t border-gray-700 mt-8 pt-6 text-center text-sm">
+        <div className="border-t border-gray-700 mt-6 pt-5 md:mt-8 md:pt-6 text-center text-sm">
           &copy; {new Date().getFullYear()} Watch HIVE by 빈시멍. All rights reserved.
         </div>
       </footer>
