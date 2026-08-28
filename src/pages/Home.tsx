@@ -5,7 +5,7 @@ import { useShare } from '../hooks/useShare';
 import { FEATURED_VIDEO } from '../data/featured';
 
 const SERVICES = [
-  { to: '/timegrapher', title: 'Timegrapher', desc: '폰으로 간편한 시계 상태 진단', img: '/images/timegrapher_img.jpg' },
+  { to: '/timegrapher', title: 'Timegrapher', desc: '세계에서 가장 간편한 시계 진단', img: '/images/timegrapher_img.jpg' },
   { to: '/year-finder', title: 'Year Finder', desc: '시리얼 넘버로 생산년도 확인', img: '/images/year_finder_img.png' },
   { to: '/fit-finder', title: 'Fit Finder', desc: '내 손목에 딱 맞는 시계 사이즈 추천', img: '/images/fit_finder_img.jpg' },
   { to: '/videos', title: 'Videos', desc: '빈티지 시계 리뷰와 시계 헌팅 영상', img: '/images/videos_img.jpg' },

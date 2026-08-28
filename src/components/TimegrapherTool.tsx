@@ -491,7 +491,7 @@ function PlacementGuide() {
   return (
     <div className="flex flex-col items-center mb-2">
       <div className="mb-6">
-        <p className="text-xl font-bold text-gray-800">폰으로 간편한 시계 상태 진단</p>
+        <p className="text-xl font-bold text-gray-800">세계에서 가장 간편한 시계 진단</p>
         <p className="text-sm text-gray-500 mt-1.5">설치 없이, 광고 없이, 무료로 제공합니다</p>
       </div>
       {/* 잘린 폰 윗부분은 위로 갈수록 흐려지며 투명하게 사라지도록 원본에 그라데이션을 구워 넣었다.
