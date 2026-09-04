@@ -121,7 +121,7 @@ function NoteCard({ title, children }: { title: string; children: ReactNode }) {
 /** 숫자만으로는 좋고 나쁨을 알 수 없으므로, 정비 기준과 빈티지에서 통용되는 기준을 나란히 보여준다. */
 function ReferenceNote() {
   return (
-    <NoteSection title="📊 참고해 주세요">
+    <NoteSection title="| 참고해 주세요">
       {REFERENCE_ROWS.map((row) => (
         <NoteCard key={row.metric} title={row.metric}>
           <p className="text-sm text-gray-600 leading-relaxed mb-1">
@@ -245,7 +245,7 @@ function DiagnosisSection({ result }: { result: MeasurementResult }) {
 /** 결과를 어디까지 믿어도 되는지 알려주는 고지. 숫자를 단정적으로 받아들이지 않도록 결과 아래에 둔다. */
 function Disclaimers() {
   return (
-    <NoteSection title="💡 읽어주세요">
+    <NoteSection title="| 읽어주세요">
       {DISCLAIMERS.map((item) => (
         <NoteCard key={item.title} title={item.title}>
           <p className="text-sm text-gray-600 leading-relaxed">{item.body}</p>

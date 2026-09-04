@@ -164,7 +164,7 @@ export default function SeikoYearFinder() {
                 </div>
               </div>
               <div className="text-sm text-gray-600 bg-white/70 rounded-xl p-4">
-                🔎{' '}
+                ※{' '}
                 {res.reasonKind === 'noCal' && '칼리버를 함께 입력하면 대부분 한 해로 좁혀집니다.'}
                 {res.reasonKind === 'notFound' && (
                   <>입력한 칼리버 <b>{res.caliber}</b>는 아직 연도 자료가 없어요. 시리얼만으로 후보를 표시합니다.</>
@@ -185,7 +185,7 @@ export default function SeikoYearFinder() {
         <div className="bg-gray-800 text-white px-5 py-3 font-semibold">Seiko 시리얼넘버 조회 가이드</div>
         <div className="p-5 space-y-4">
           <div>
-            <p className="font-bold text-gray-800 mb-1">📍 시리얼·칼리버 번호는 어디에 있나요?</p>
+            <p className="font-bold text-gray-800 mb-1">| 시리얼·칼리버 번호는 어디에 있나요?</p>
             <p className="text-gray-600 text-sm leading-relaxed">
               모두 케이스백(뒷뚜껑)에 각인돼 있습니다. 6~7자리 <b>시리얼</b>은 첫 자리가 숫자, 둘째 자리는 숫자 또는 O·N·D 문자이며 나머지는 숫자입니다. <b>칼리버</b>는 <span className="tracking-wide">CCCC-XXXX</span> 형태 모델번호의 앞 4자리예요.
             </p>
@@ -204,19 +204,19 @@ export default function SeikoYearFinder() {
             </figure>
           </div>
           <div>
-            <p className="font-bold text-gray-800 mb-1">🎯 왜 칼리버까지 넣나요?</p>
+            <p className="font-bold text-gray-800 mb-1">| 왜 칼리버까지 넣나요?</p>
             <p className="text-gray-600 text-sm leading-relaxed">
               세이코 시리얼은 연도의 <b>끝자리</b>만 담고 있어 시리얼만으로는 1972·1982·1992처럼 10년 단위를 가릴 수 없습니다. 칼리버의 생산 시기를 겹쳐 보면 대부분 <b>한 해</b>로 좁혀집니다.
             </p>
           </div>
           <div>
-            <p className="font-bold text-gray-800 mb-1">📅 연도가 여러 개로 나오면?</p>
+            <p className="font-bold text-gray-800 mb-1">| 연도가 여러 개로 나오면?</p>
             <p className="text-gray-600 text-sm leading-relaxed">
               해당 칼리버의 연도 자료가 없거나, 그 무브먼트가 10년 넘게 생산된 경우입니다. 후보 연도 중 모델·디자인으로 좁혀 판단하세요.
             </p>
           </div>
           <div>
-            <p className="font-bold text-gray-800 mb-1">⚠️ 조회가 어려운 경우</p>
+            <p className="font-bold text-gray-800 mb-1">| 조회가 어려운 경우</p>
             <p className="text-gray-600 text-sm leading-relaxed">
               2019년 이후 <b>세이코 5 스포츠</b>의 6자리 번호는 생산 일련번호라 연도 판별에 쓸 수 없습니다. 그랜드 세이코·일부 쿼츠·무브먼트를 교체한 개체도 정확하지 않을 수 있어요. 모든 결과는 <b>추정</b>이며 참고용입니다.
             </p>

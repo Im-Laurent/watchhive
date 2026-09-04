@@ -9,7 +9,7 @@ export default function KoreanYearNews({ year }: { year: number }) {
   return (
     <div className="text-left bg-white rounded-xl p-4 mt-3 shadow-sm">
       <div className="flex items-center gap-2 mb-2">
-        <p className="font-bold text-gray-700">🇰🇷 {year}년 대한민국</p>
+        <p className="font-bold text-gray-700">| {year}년 대한민국</p>
         {entry.era && (
           <span className="text-[11px] font-semibold text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">{entry.era}</span>
         )}

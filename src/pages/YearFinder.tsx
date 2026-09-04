@@ -174,7 +174,7 @@ export default function YearFinder() {
                     <p className="text-5xl font-bold text-green-700 mb-4">{res.year}</p>
                     {res.wFact.length > 0 && (
                       <div className="text-left bg-white rounded-xl p-4 mb-3 shadow-sm">
-                        <p className="font-bold text-gray-700 mb-2">🕰️ 브랜드 시계 역사</p>
+                        <p className="font-bold text-gray-700 mb-2">| 브랜드 시계 역사</p>
                         <ul className="list-disc list-inside space-y-1 text-gray-600 text-sm">{res.wFact.map((f, i) => <li key={i}>{f.fact}</li>)}</ul>
                       </div>
                     )}

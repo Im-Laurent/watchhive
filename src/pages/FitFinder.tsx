@@ -207,7 +207,7 @@ export default function FitFinder() {
           {/* Measurement guide (collapsible) */}
           <details className="mt-6 group">
             <summary className="cursor-pointer list-none flex items-center justify-between p-4 bg-gray-50 rounded-xl text-gray-700 font-semibold">
-              <span>📐 손목 단면 측정 방법</span>
+              <span>| 손목 단면 측정 방법</span>
               <span className="transition-transform group-open:rotate-180">▾</span>
             </summary>
             <div className="p-4">
@@ -224,13 +224,13 @@ export default function FitFinder() {
 
           {/* Tips */}
           <div className="mt-6 p-5 bg-gray-50 rounded-xl text-gray-700">
-            <p className="font-bold text-lg mb-3">💡 참고해주세요!</p>
+            <p className="font-bold text-lg mb-3">| 참고해주세요!</p>
             <ul className="space-y-2 text-base">
-              <li>✋ 손목 단면 너비는 손목 뼈에서 1.0~1.5cm 왼쪽을 측정하세요. (왼손 기준)</li>
-              <li>📏 세로로 긴 직사각형, 타원형 시계의 경우 추천 케이스 사이즈는 세로를 기준으로 참고하세요.</li>
-              <li>🎲 바둑알 간지를 원하시면 추천 케이스 사이즈의 최소값에 도전해 보세요.</li>
-              <li>🙋‍♂️ 손목 너비 5cm인 저는 27~32mm 빈티지를 즐겨 차며, 최대 사이즈는 34mm로 하고 있습니다.</li>
-              <li>🛡️ 파네라이는 방간 맛으로 차는 시계니까 추천 사이즈와 무관하게 호신용으로 좋아보이는걸 선택하세요.</li>
+              <li>– 손목 단면 너비는 손목 뼈에서 1.0~1.5cm 왼쪽을 측정하세요. (왼손 기준)</li>
+              <li>– 세로로 긴 직사각형, 타원형 시계의 경우 추천 케이스 사이즈는 세로를 기준으로 참고하세요.</li>
+              <li>– 바둑알 간지를 원하시면 추천 케이스 사이즈의 최소값에 도전해 보세요.</li>
+              <li>– 손목 너비 5cm인 저는 27~32mm 빈티지를 즐겨 차며, 최대 사이즈는 34mm로 하고 있습니다.</li>
+              <li>– 파네라이는 방간 맛으로 차는 시계니까 추천 사이즈와 무관하게 호신용으로 좋아보이는걸 선택하세요.</li>
             </ul>
           </div>
         </div>
