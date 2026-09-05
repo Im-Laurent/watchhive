@@ -46,9 +46,9 @@ export type MuseumPlate = {
   watch: string;
 };
 
-/** 한 작품이 가진 사진 한 장. kind 는 full → detail → watch 순으로 온다. */
+/** 한 작품이 가진 사진 한 장. kind 는 square → detail → full → watch 순으로 온다. */
 export type MuseumShot = {
-  kind: 'full' | 'detail' | 'watch';
+  kind: 'square' | 'detail' | 'full' | 'watch';
   label: string;
   /** 확장자 없는 경로. webp 와 jpg 가 한 벌씩 있다. */
   src: string;

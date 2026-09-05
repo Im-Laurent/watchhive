@@ -9,11 +9,11 @@ export const FALLBACK_MUSEUM: MuseumPiece[] = [
     "alt": "코미디언 — 롤렉스 서브마리너 5513를 착용한 모습",
     "shots": [
       {
-        "kind": "full",
-        "label": "전체",
-        "src": "/images/museum/comedian-submariner-full",
-        "w": 1600,
-        "h": 893
+        "kind": "square",
+        "label": "작품",
+        "src": "/images/museum/comedian-submariner-square",
+        "w": 1536,
+        "h": 1536
       },
       {
         "kind": "detail",
@@ -21,6 +21,13 @@ export const FALLBACK_MUSEUM: MuseumPiece[] = [
         "src": "/images/museum/comedian-submariner-detail",
         "w": 1200,
         "h": 1200
+      },
+      {
+        "kind": "full",
+        "label": "작품 전체",
+        "src": "/images/museum/comedian-submariner-full",
+        "w": 1600,
+        "h": 893
       },
       {
         "kind": "watch",
@@ -52,11 +59,11 @@ export const FALLBACK_MUSEUM: MuseumPiece[] = [
     "alt": "아담의 창조 — 까르띠에 산토스 뒤몽 엑스트라 플랫를 착용한 모습",
     "shots": [
       {
-        "kind": "full",
-        "label": "전체",
-        "src": "/images/museum/adam-santos-full",
+        "kind": "square",
+        "label": "작품",
+        "src": "/images/museum/adam-santos-square",
         "w": 1600,
-        "h": 712
+        "h": 1600
       },
       {
         "kind": "detail",
@@ -64,6 +71,13 @@ export const FALLBACK_MUSEUM: MuseumPiece[] = [
         "src": "/images/museum/adam-santos-detail",
         "w": 1200,
         "h": 1200
+      },
+      {
+        "kind": "full",
+        "label": "작품 전체",
+        "src": "/images/museum/adam-santos-full",
+        "w": 1600,
+        "h": 712
       },
       {
         "kind": "watch",
@@ -95,11 +109,11 @@ export const FALLBACK_MUSEUM: MuseumPiece[] = [
     "alt": "금동미륵보살반가사유상 (국보 제78호) — 예거 르쿨트르 리베르소를 착용한 모습",
     "shots": [
       {
-        "kind": "full",
-        "label": "전체",
-        "src": "/images/museum/bodhisattva78-reverso-full",
-        "w": 893,
-        "h": 1600
+        "kind": "square",
+        "label": "작품",
+        "src": "/images/museum/bodhisattva78-reverso-square",
+        "w": 1536,
+        "h": 1536
       },
       {
         "kind": "detail",
@@ -107,6 +121,13 @@ export const FALLBACK_MUSEUM: MuseumPiece[] = [
         "src": "/images/museum/bodhisattva78-reverso-detail",
         "w": 1200,
         "h": 1200
+      },
+      {
+        "kind": "full",
+        "label": "작품 전체",
+        "src": "/images/museum/bodhisattva78-reverso-full",
+        "w": 893,
+        "h": 1600
       },
       {
         "kind": "watch",
@@ -138,11 +159,11 @@ export const FALLBACK_MUSEUM: MuseumPiece[] = [
     "alt": "금동미륵보살반가사유상 (국보 제83호) — 롤렉스 익스플로러 1016를 착용한 모습",
     "shots": [
       {
-        "kind": "full",
-        "label": "전체",
-        "src": "/images/museum/bodhisattva83-explorer-full",
-        "w": 893,
-        "h": 1600
+        "kind": "square",
+        "label": "작품",
+        "src": "/images/museum/bodhisattva83-explorer-square",
+        "w": 1152,
+        "h": 1152
       },
       {
         "kind": "detail",
@@ -150,6 +171,13 @@ export const FALLBACK_MUSEUM: MuseumPiece[] = [
         "src": "/images/museum/bodhisattva83-explorer-detail",
         "w": 1200,
         "h": 1200
+      },
+      {
+        "kind": "full",
+        "label": "작품 전체",
+        "src": "/images/museum/bodhisattva83-explorer-full",
+        "w": 893,
+        "h": 1600
       },
       {
         "kind": "watch",
@@ -181,11 +209,11 @@ export const FALLBACK_MUSEUM: MuseumPiece[] = [
     "alt": "우유 따르는 여인 — 오데마 피게 로열 오크 5402 '점보'를 착용한 모습",
     "shots": [
       {
-        "kind": "full",
-        "label": "전체",
-        "src": "/images/museum/milkmaid-royaloak-full",
-        "w": 1472,
-        "h": 1472
+        "kind": "square",
+        "label": "작품",
+        "src": "/images/museum/milkmaid-royaloak-square",
+        "w": 1177,
+        "h": 1177
       },
       {
         "kind": "detail",
@@ -193,6 +221,13 @@ export const FALLBACK_MUSEUM: MuseumPiece[] = [
         "src": "/images/museum/milkmaid-royaloak-detail",
         "w": 1200,
         "h": 1200
+      },
+      {
+        "kind": "full",
+        "label": "작품 전체",
+        "src": "/images/museum/milkmaid-royaloak-full",
+        "w": 1472,
+        "h": 1472
       },
       {
         "kind": "watch",
@@ -224,9 +259,9 @@ export const FALLBACK_MUSEUM: MuseumPiece[] = [
     "alt": "생각하는 사람 — 파텍 필립 노틸러스 3700를 착용한 모습",
     "shots": [
       {
-        "kind": "full",
-        "label": "전체",
-        "src": "/images/museum/thinker-nautilus-full",
+        "kind": "square",
+        "label": "작품",
+        "src": "/images/museum/thinker-nautilus-square",
         "w": 1472,
         "h": 1472
       },
@@ -236,6 +271,13 @@ export const FALLBACK_MUSEUM: MuseumPiece[] = [
         "src": "/images/museum/thinker-nautilus-detail",
         "w": 1200,
         "h": 1200
+      },
+      {
+        "kind": "full",
+        "label": "작품 전체",
+        "src": "/images/museum/thinker-nautilus-full",
+        "w": 1472,
+        "h": 1472
       },
       {
         "kind": "watch",
@@ -267,10 +309,10 @@ export const FALLBACK_MUSEUM: MuseumPiece[] = [
     "alt": "모나리자 — 까르띠에 탱크 루이를 착용한 모습",
     "shots": [
       {
-        "kind": "full",
-        "label": "전체",
-        "src": "/images/museum/monalisa-tank-full",
-        "w": 1073,
+        "kind": "square",
+        "label": "작품",
+        "src": "/images/museum/monalisa-tank-square",
+        "w": 1600,
         "h": 1600
       },
       {
@@ -279,6 +321,13 @@ export const FALLBACK_MUSEUM: MuseumPiece[] = [
         "src": "/images/museum/monalisa-tank-detail",
         "w": 1200,
         "h": 1200
+      },
+      {
+        "kind": "full",
+        "label": "작품 전체",
+        "src": "/images/museum/monalisa-tank-full",
+        "w": 1073,
+        "h": 1600
       },
       {
         "kind": "watch",
@@ -310,11 +359,11 @@ export const FALLBACK_MUSEUM: MuseumPiece[] = [
     "alt": "타히티의 여인들 — 롤렉스 GMT-마스터 6542 '펩시'를 착용한 모습",
     "shots": [
       {
-        "kind": "full",
-        "label": "전체",
-        "src": "/images/museum/tahiti-gmt-full",
-        "w": 1600,
-        "h": 1196
+        "kind": "square",
+        "label": "작품",
+        "src": "/images/museum/tahiti-gmt-square",
+        "w": 1280,
+        "h": 1280
       },
       {
         "kind": "detail",
@@ -322,6 +371,13 @@ export const FALLBACK_MUSEUM: MuseumPiece[] = [
         "src": "/images/museum/tahiti-gmt-detail",
         "w": 1200,
         "h": 1200
+      },
+      {
+        "kind": "full",
+        "label": "작품 전체",
+        "src": "/images/museum/tahiti-gmt-full",
+        "w": 1600,
+        "h": 1196
       },
       {
         "kind": "watch",
