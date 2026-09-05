@@ -3,11 +3,13 @@ import PageHead from '../components/PageHead';
 import MuseumFrame from '../components/MuseumFrame';
 import MuseumLightbox from '../components/MuseumLightbox';
 import { useMuseum } from '../hooks/useMuseum';
+import { useShare } from '../hooks/useShare';
 import { PAGE_META } from '../data/pageMeta';
 import type { MuseumPiece } from '../data/types';
 
 export default function Museum() {
   const { pieces } = useMuseum();
+  const { handleShare, shareMessage } = useShare();
   const [open, setOpen] = useState<{ piece: MuseumPiece; index: number } | null>(null);
   const roomRef = useRef<HTMLElement>(null);
 
@@ -89,6 +91,18 @@ export default function Museum() {
           원본 출처와 라이선스는 각 명제표에 표기했습니다.
         </footer>
       </main>
+
+      {/* 다른 페이지와 같은 구독·공유 영역. 전시실이 끝나면 사이트의 밝은 바탕으로
+          돌아오므로 색을 바꾸지 않고 있는 그대로 쓴다 — 어두운 방 안에 넣으면
+          text-gray-700 이 배경에 묻힌다. */}
+      <section className="container mx-auto p-8 text-center">
+        <p className="text-gray-700 text-lg mb-6">구독과 공유는 콘텐츠 제작에 큰 힘이 됩니다.</p>
+        <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-4 mb-6">
+          <a href="https://www.youtube.com/@seemoung?sub_confirmation=1" target="_blank" rel="noreferrer" className="bg-gray-800 hover:bg-gray-700 text-gray-100 font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out text-base sm:text-lg w-full sm:w-auto">YouTube 채널 구독하기</a>
+          <button onClick={() => handleShare()} className="bg-gray-800 hover:bg-gray-700 text-gray-100 font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out text-base sm:text-lg w-full sm:w-auto">다른 시계 덕후에게 공유하기</button>
+        </div>
+        {shareMessage && <div className="mt-4 text-blue-600 text-sm">{shareMessage}</div>}
+      </section>
 
       {open && (
         <MuseumLightbox
