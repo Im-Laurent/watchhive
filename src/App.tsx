@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Videos from './pages/Videos';
+import Museum from './pages/Museum';
 import FitFinder from './pages/FitFinder';
 import YearFinder from './pages/YearFinder';
 import Timegrapher from './pages/Timegrapher';
@@ -14,6 +15,7 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/museum" element={<Museum />} />
         <Route path="/videos" element={<Videos />} />
         <Route path="/fit-finder" element={<FitFinder />} />
         <Route path="/year-finder" element={<YearFinder />} />

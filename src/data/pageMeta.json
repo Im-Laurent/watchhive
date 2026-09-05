@@ -30,6 +30,14 @@
       "image": "/images/og/fit-finder.jpg",
       "imageAlt": "가죽 위에 나란히 놓인 빈티지 시계 여섯 점 — 케이스 크기와 형태가 저마다 다르다"
     },
+    "museum": {
+      "title": "Museum",
+      "description": "명화와 조각의 손목에 시계사에 이름을 남긴 빈티지 시계를 채워 넣었습니다. 아담의 창조, 모나리자, 반가사유상, 생각하는 사람에 롤렉스·파텍 필립·까르띠에·오데마 피게를 올린 AI 합성 갤러리.",
+      "ogDescription": "예술품 간의 만남",
+      "path": "/museum",
+      "image": "/images/og/museum.jpg",
+      "imageAlt": "벽에 덕트 테이프로 붙은 바나나를 가로지르는 롤렉스 서브마리너 브레이슬릿"
+    },
     "videos": {
       "title": "Videos",
       "description": "빈시멍 유튜브 채널의 최신 영상. 빈티지 시계 리뷰와 시계 헌팅 영상 모음.",

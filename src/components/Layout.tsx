@@ -12,9 +12,17 @@ const NAV = [
   { to: '/timegrapher', label: 'Timegrapher', end: false },
   { to: '/year-finder', label: 'Year Finder', end: false },
   { to: '/fit-finder', label: 'Fit Finder', end: false },
+  { to: '/museum', label: 'Museum', end: false },
   { to: '/videos', label: 'Videos', end: false },
   { to: '/about-me', label: 'About Me', end: false },
 ];
+
+// 데스크톱 헤더에서는 Watch HIVE 를 가운데 두고 좌우로 셋씩 가른다.
+// 왼쪽은 재 주는 도구, 오른쪽은 보는 것 — 순서를 바꾸지 않고 딱 반으로 갈리는 자리다.
+// 모바일 메뉴와 푸터는 계속 NAV 를 통째로 순서대로 쓴다.
+const SPLIT = 3;
+const NAV_LEFT = NAV.slice(0, SPLIT);
+const NAV_RIGHT = NAV.slice(SPLIT);
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   `text-lg font-medium whitespace-nowrap ${isActive ? 'underline underline-offset-4 text-gray-900' : 'text-gray-600 hover:text-gray-900'}`;
@@ -31,21 +39,31 @@ export default function Layout() {
       <PullToRefresh />
       {/* Header */}
       <header className="bg-white shadow-sm py-4 px-6 md:px-12">
-        {/* [Watch HIVE ... 메뉴] — 모바일은 메뉴 자리에 햄버거가 온다.
-            메뉴가 5개라 md 폭에서는 간격을 좁혀야 한 줄에 들어간다. */}
-        <div className="container mx-auto flex items-center justify-between gap-6">
+        {/* 데스크톱: [도구 셋] Watch HIVE [볼거리 셋]. 양옆 nav 에 flex-1 을 줘서
+            두 무리의 폭이 달라도 로고가 가운데에 선다.
+            모바일: nav 둘이 숨으면 남는 건 로고와 햄버거뿐이라 양 끝으로 갈린다.
+            메뉴가 6개라 md 폭에서는 간격을 좁혀야 한 줄에 들어간다. */}
+        <div className="container mx-auto flex items-center justify-between gap-6 md:gap-8 lg:gap-12">
+          <nav className="hidden md:flex flex-1 items-center justify-end space-x-5 lg:space-x-8 xl:space-x-10">
+            {NAV_LEFT.map((item) => (
+              <NavLink key={item.to} to={item.to} end={item.end} className={navLinkClass}>
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+
           <NavLink
             to={HOME.to}
             end={HOME.end}
             className={({ isActive }) =>
-              `text-2xl font-bold text-gray-800 whitespace-nowrap ${isActive ? 'underline underline-offset-4' : ''}`
+              `text-2xl font-bold text-gray-800 whitespace-nowrap shrink-0 ${isActive ? 'underline underline-offset-4' : ''}`
             }
           >
             {HOME.label}
           </NavLink>
 
-          <nav className="hidden md:flex items-center space-x-5 lg:space-x-8 xl:space-x-10">
-            {NAV.map((item) => (
+          <nav className="hidden md:flex flex-1 items-center justify-start space-x-5 lg:space-x-8 xl:space-x-10">
+            {NAV_RIGHT.map((item) => (
               <NavLink key={item.to} to={item.to} end={item.end} className={navLinkClass}>
                 {item.label}
               </NavLink>
