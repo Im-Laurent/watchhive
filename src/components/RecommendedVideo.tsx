@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useVideos } from '../hooks/useVideos';
+import YouTubeThumbnail from './YouTubeThumbnail';
 
 /** 측정 결과 화면에 관련 영상 1개를 추천한다. videos 목록이 바뀌지 않는 한 같은 영상을 유지한다. */
 export default function RecommendedVideo() {
@@ -22,19 +23,9 @@ export default function RecommendedVideo() {
         className="group block bg-gray-50 hover:bg-gray-100 rounded-xl overflow-hidden transition"
       >
         <div className="relative w-full aspect-video bg-gray-200">
-          <img
-            src={`https://i.ytimg.com/vi/${video.youtubeId}/maxresdefault.jpg`}
+          <YouTubeThumbnail
+            youtubeId={video.youtubeId}
             alt={video.title}
-            loading="lazy"
-            onError={(e) => {
-              // maxres(1280x720)가 없는 영상은 hq → mq 순으로 폴백 (Videos.tsx와 동일)
-              const img = e.currentTarget;
-              if (img.src.includes('maxresdefault')) {
-                img.src = `https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg`;
-              } else if (img.src.includes('hqdefault')) {
-                img.src = `https://i.ytimg.com/vi/${video.youtubeId}/mqdefault.jpg`;
-              }
-            }}
             className="absolute top-0 left-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity">

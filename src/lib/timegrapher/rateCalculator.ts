@@ -1,3 +1,5 @@
+import { beatDeviations, beatIndicesOf, beatSlopes, median } from './stats';
+
 export type RateEstimate = {
   secondsPerDay: number | null;
   sampleCount: number;
@@ -7,6 +9,7 @@ export type RateEstimate = {
 };
 
 const MIN_PEAKS_FOR_RATE = 8;
+const SECONDS_PER_DAY = 86400;
 
 /**
  * 이 값을 넘으면 tick 타이밍이 너무 흔들려 하루 오차를 믿기 어렵다고 본다.
@@ -18,12 +21,6 @@ const MIN_PEAKS_FOR_RATE = 8;
  * 이미 하루 오차가 15초/일가량 밀렸으므로, 그 구간부터 경고하도록 6ms에 선을 둔다.
  */
 const MAX_CLEAN_JITTER_MS = 6;
-
-function median(values: number[]): number {
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
-}
 
 /**
  * tick 간격을 실측값과 이론값(3600/BPH)의 합으로 단순 비교하던 이전 방식은, 실제 녹음
@@ -45,28 +42,20 @@ export function calculateRate(peakTimestamps: number[], bph: number | null): Rat
 
   const sorted = [...peakTimestamps].sort((a, b) => a - b);
   const theoreticalInterval = 3600 / bph;
-  const first = sorted[0];
-  const beatIndices = sorted.map((t) => Math.round((t - first) / theoreticalInterval));
+  const beatIndices = beatIndicesOf(sorted, theoreticalInterval);
 
-  const slopes: number[] = [];
-  for (let i = 0; i < sorted.length; i++) {
-    for (let j = i + 1; j < sorted.length; j++) {
-      const beatDelta = beatIndices[j] - beatIndices[i];
-      if (beatDelta === 0) continue;
-      slopes.push((sorted[j] - sorted[i]) / beatDelta);
-    }
-  }
+  const slopes = beatSlopes(sorted, beatIndices);
   if (slopes.length < MIN_PEAKS_FOR_RATE - 1) {
     return { secondsPerDay: null, sampleCount: 0, jitterMs: null, confidence: 'low' };
   }
 
   const actualSecondsPerBeat = median(slopes);
-  const secondsPerDay = ((theoreticalInterval - actualSecondsPerBeat) / theoreticalInterval) * 86400;
+  const secondsPerDay =
+    ((theoreticalInterval - actualSecondsPerBeat) / theoreticalInterval) * SECONDS_PER_DAY;
 
   // 추정한 비트 간격으로 되돌려 각 tick이 적합선에서 얼마나 벗어났는지 본다. 값 자체가
   // 아니라 "그 값을 얼마나 믿을 수 있는지"를 재는 지표다 — 소음이 섞이면 여기가 먼저 커진다.
-  const residuals = sorted.map((t, i) => Math.abs(t - first - beatIndices[i] * actualSecondsPerBeat));
-  const jitterMs = median(residuals) * 1000;
+  const jitterMs = median(beatDeviations(sorted, beatIndices, actualSecondsPerBeat).map(Math.abs)) * 1000;
 
   return {
     secondsPerDay,

@@ -19,6 +19,7 @@ import {
 import RecommendedVideo from './RecommendedVideo';
 import { PAGE_META, SITE } from '../data/pageMeta';
 import { setPullToRefreshLocked } from '../lib/pullToRefreshLock';
+import { deviationsMs, movingAverage } from '../lib/timegrapher/vibrograph';
 
 // 배지·버튼·결과 패널 색은 Year Finder / Fit Finder에서 쓰는 팔레트를 그대로 따른다.
 const GRADE_STYLE: Record<Grade, string> = {
@@ -334,15 +335,7 @@ function CommunitySection() {
   );
 }
 
-// 처음엔 오픈소스 vacaboja/tg의 "paperstrip"(점이 흩뿌려지는 방식)을 이식했지만, 실기기로 테스트해보니
-// 폰 마이크의 tick당 타이밍 오차(~11ms)가 한 tick 단위로 보기엔 너무 커서 점들이 뭉치지 않고
-// 흩어져 보였다. 사용자가 참고로 보여준 실제 Witschi 타임그래퍼 화면은 점이 아니라 부드럽게 이어지는
-// 연속 곡선이었는데, 실제 녹음(론진 수동/까르띠에 자동)으로 확인해보니 그 이유를 알 수 있었다:
-// tick 하나하나의 절대 타이밍은 노이즈가 크지만, 여러 tick을 이동평균으로 스무딩하면(약 2초 분량)
-// 그 노이즈가 상쇄되고 실제로 의미 있는 완만한 추이(예: 손으로 든 폰이 미세하게 움직이며 생기는
-// 편차 변화)가 매끄러운 곡선으로 드러난다 — Theil-Sen으로 이미 신뢰도를 검증한 Rate 계산과 같은
-// "여러 tick을 통계적으로 합쳐 노이즈를 줄인다"는 원리를 시각화에도 적용한 것. BPH/Rate 등 실제
-// 측정치 계산과는 분리된 시각화 전용 로직이라, 여기 정밀도가 떨어져도 결과 수치에는 영향이 없다.
+// 곡선의 의미와 계산은 lib/timegrapher/vibrograph.ts 에 적어 뒀다. 여기서는 그리기만 한다.
 const DISPLAY_WINDOW_SECONDS = 15; // 화면에 한 번에 보여주는 시간 폭(측정 구간과 동일)
 const SMOOTHING_WINDOW_SECONDS = 2; // 이동평균 스무딩 폭 — 실제 녹음으로 비교해 선택
 // 캔버스는 CSS 폭(모바일에서 ~370px)보다 크게 그려서 축소 렌더링으로 선을 또렷하게 만든다.
@@ -351,31 +344,8 @@ const CANVAS_WIDTH = 1200;
 const CANVAS_HEIGHT = 560;
 const GRID_LINE_WIDTH = 2;
 const CURVE_LINE_WIDTH = 3;
-
-function median(values: number[]): number {
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
-}
-
-/** Theil-Sen(모든 tick 쌍의 기울기 중앙값)으로 이론 간격 기준 기준선을 구하고, 각 tick이 그 기준선에서
- * 얼마나 벗어났는지(ms)를 계산한다. rateCalculator.ts와 같은 원리를 시각화용으로 재사용한다. */
-function computeDeviationsMs(peaks: number[], bph: number): number[] {
-  const theoretical = 3600 / bph;
-  const first = peaks[0];
-  const beatIndices = peaks.map((t) => Math.round((t - first) / theoretical));
-  const slopes: number[] = [];
-  for (let i = 0; i < peaks.length; i++) {
-    for (let j = i + 1; j < peaks.length; j++) {
-      const beatDelta = beatIndices[j] - beatIndices[i];
-      if (beatDelta === 0) continue;
-      slopes.push((peaks[j] - peaks[i]) / beatDelta);
-    }
-  }
-  const fittedInterval = slopes.length > 0 ? median(slopes) : theoretical;
-  return peaks.map((t, i) => (t - (first + beatIndices[i] * fittedInterval)) * 1000);
-}
-
+/** 곡선을 그리기 위해 최소한 필요한 tick 수 */
+const MIN_PEAKS_FOR_CURVE = 8;
 function useVibrographRenderer(
   active: boolean,
   peaksRef: ReturnType<typeof useTickCapture>['peaksRef'],
@@ -395,6 +365,9 @@ function useVibrographRenderer(
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // 이 효과 한 번(= 한 번의 측정) 동안만 사는 곡선 캐시. 새 측정이 시작되면 effect 가 다시 돌면서 비워진다.
+    const cache: { count: number; points: { t: number; y: number }[] } = { count: -1, points: [] };
+
     let frameId: number;
     const draw = () => {
       const { width, height: plotHeight } = canvas;
@@ -405,27 +378,22 @@ function useVibrographRenderer(
       const allPeaks = peaksRef.current;
       const bph = bphRef.current;
 
-      if (allPeaks.length >= 8 && bph) {
+      if (allPeaks.length >= MIN_PEAKS_FOR_CURVE && bph) {
         const latest = allPeaks[allPeaks.length - 1];
         const windowStart = latest - DISPLAY_WINDOW_SECONDS;
         // 스무딩 윈도우가 화면 왼쪽 끝에서도 온전히 계산되도록, 화면 밖의 과거 데이터도 여유분만큼 포함
         const peaks = allPeaks.filter((t) => t > windowStart - SMOOTHING_WINDOW_SECONDS);
 
-        if (peaks.length >= 8) {
-          const deviations = computeDeviationsMs(peaks, bph);
-          const smoothed = peaks.map((t) => {
-            let sum = 0;
-            let count = 0;
-            for (let j = 0; j < peaks.length; j++) {
-              if (Math.abs(peaks[j] - t) <= SMOOTHING_WINDOW_SECONDS / 2) {
-                sum += deviations[j];
-                count++;
-              }
-            }
-            return sum / count;
-          });
-
-          const visible = peaks.map((t, i) => ({ t, y: smoothed[i] })).filter((p) => p.t > windowStart);
+        if (peaks.length >= MIN_PEAKS_FOR_CURVE) {
+          // 곡선은 tick 이 새로 잡힐 때만 바뀐다(초당 8~12개). 그런데 이 루프는 초당 60번 돌고,
+          // Theil-Sen 은 tick 쌍을 전부 보는 O(n²) 라 매 프레임 다시 계산하면 폰에서 헛일을 한다.
+          // 개수가 그대로면 직전 결과를 재사용해 준다 — 그려지는 그림은 같다.
+          if (cache.count !== peaks.length) {
+            const smoothed = movingAverage(peaks, deviationsMs(peaks, bph), SMOOTHING_WINDOW_SECONDS);
+            cache.count = peaks.length;
+            cache.points = peaks.map((t, i) => ({ t, y: smoothed[i] }));
+          }
+          const visible = cache.points.filter((p) => p.t > windowStart);
 
           if (visible.length >= 2) {
             const grid = '#ffffff26';

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MuseumPiece } from '../data/types';
 import MuseumPager from './MuseumPager';
 import MuseumPlate from './MuseumPlate';
-import { isSwipe } from './museumGeometry';
+import { isSwipe, wrapIndex } from './museumGeometry';
 
 const MIN = 1;
 const MAX = 5;
@@ -32,10 +32,7 @@ export default function MuseumLightbox({ piece, startIndex, onClose }: Props) {
   const { shots } = piece;
   const shot = shots[index] ?? shots[0];
 
-  const go = useCallback(
-    (n: number) => setIndex(((n % shots.length) + shots.length) % shots.length),
-    [shots.length],
-  );
+  const go = useCallback((n: number) => setIndex(wrapIndex(n, shots.length)), [shots.length]);
 
   const apply = useCallback(() => {
     const img = imgRef.current;

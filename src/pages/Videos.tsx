@@ -1,12 +1,12 @@
 import PageHead from '../components/PageHead';
 import { useVideos } from '../hooks/useVideos';
-import { useShare } from '../hooks/useShare';
 import PageHero from '../components/PageHero';
+import YouTubeThumbnail from '../components/YouTubeThumbnail';
+import SubscribeShare from '../components/SubscribeShare';
 import { PAGE_META } from '../data/pageMeta';
 
 export default function Videos() {
   const { videos } = useVideos();
-  const { handleShare, shareMessage } = useShare();
 
   return (
     <>
@@ -25,19 +25,9 @@ export default function Videos() {
               <div key={video.youtubeId} className="bg-white rounded-lg shadow-md overflow-hidden">
                 <a href={`https://www.youtube.com/watch?v=${video.youtubeId}`} target="_blank" rel="noopener noreferrer" className="group">
                   <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-                    <img
-                      src={`https://i.ytimg.com/vi/${video.youtubeId}/maxresdefault.jpg`}
+                    <YouTubeThumbnail
+                      youtubeId={video.youtubeId}
                       alt={video.title}
-                      loading="lazy"
-                      onError={(e) => {
-                        // maxres(1280x720)가 없는 영상은 hq → mq 순으로 폴백
-                        const img = e.currentTarget;
-                        if (img.src.includes('maxresdefault')) {
-                          img.src = `https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg`;
-                        } else if (img.src.includes('hqdefault')) {
-                          img.src = `https://i.ytimg.com/vi/${video.youtubeId}/mqdefault.jpg`;
-                        }
-                      }}
                       className="absolute top-0 left-0 w-full h-full object-cover rounded-t-lg"
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -55,14 +45,7 @@ export default function Videos() {
           </div>
         </section>
 
-        <section className="p-8 text-center mt-4">
-          <p className="text-gray-700 text-lg mb-6">구독과 공유는 콘텐츠 제작에 큰 힘이 됩니다.</p>
-          <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-4 mb-6">
-            <a href="https://www.youtube.com/@seemoung?sub_confirmation=1" target="_blank" rel="noreferrer" className="bg-gray-800 hover:bg-gray-700 text-gray-100 font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out text-base sm:text-lg w-full sm:w-auto">YouTube 채널 구독하기</a>
-            <button onClick={() => handleShare()} className="bg-gray-800 hover:bg-gray-700 text-gray-100 font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out text-base sm:text-lg w-full sm:w-auto">다른 시계 덕후에게 공유하기</button>
-          </div>
-          {shareMessage && <div className="mt-4 text-blue-600 text-sm">{shareMessage}</div>}
-        </section>
+        <SubscribeShare className="mt-4" />
       </main>
     </>
   );

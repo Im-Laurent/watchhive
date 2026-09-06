@@ -1,3 +1,5 @@
+import { isPlausibleInterval, median, sortedIntervals } from './stats';
+
 // 흔한 무브먼트 진동수(시간당 비트 수). Weishi No.1000 등 하드웨어 타임그래퍼 기준 9종.
 export const STANDARD_BPH_VALUES = [12000, 14400, 18000, 19800, 21600, 25200, 28800, 36000, 43200] as const;
 
@@ -10,12 +12,6 @@ export type BphEstimate = {
 };
 
 const MIN_PEAKS_FOR_ESTIMATE = 8;
-
-function median(values: number[]): number {
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
-}
 
 function snapToStandardBph(rawBph: number): number {
   return STANDARD_BPH_VALUES.reduce((closest, candidate) =>
@@ -33,16 +29,9 @@ export function estimateBph(peakTimestamps: number[]): BphEstimate {
     return { bph: null, rawIntervalSeconds: null, confidence: 'low' };
   }
 
-  const sorted = [...peakTimestamps].sort((a, b) => a - b);
-  const intervals: number[] = [];
-  for (let i = 1; i < sorted.length; i++) {
-    intervals.push(sorted[i] - sorted[i - 1]);
-  }
-
+  const { intervals } = sortedIntervals(peakTimestamps);
   const roughMedian = median(intervals);
-  // 놓친 tick은 간격을 정확히 2배로 만들 수 있어 경계값과 딱 맞아떨어지면 안 걸러질 수 있으므로
-  // 여유를 두고 중앙값의 0.6~1.6배를 벗어나는 간격(놓친 tick·잡음성 중복 검출)을 제외한다.
-  const filtered = intervals.filter((v) => v > roughMedian * 0.6 && v < roughMedian * 1.6);
+  const filtered = intervals.filter((v) => isPlausibleInterval(v, roughMedian));
   if (filtered.length < MIN_PEAKS_FOR_ESTIMATE - 1) {
     return { bph: null, rawIntervalSeconds: null, confidence: 'low' };
   }

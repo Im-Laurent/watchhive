@@ -1,17 +1,13 @@
 import { useState, useRef } from 'react';
 import PageHead from '../components/PageHead';
 import { PAGE_META } from '../data/pageMeta';
-import { useShare } from '../hooks/useShare';
-import { OMEGA_SERIALS } from '../data/serials/omega';
-import { ROLEX_SERIALS } from '../data/serials/rolex';
-import { IWC_SERIALS } from '../data/serials/iwc';
-import { LONGINES_SERIALS } from '../data/serials/longines';
-import { UG_SERIALS } from '../data/serials/ug';
+import { lookupYear, normalizeSerial } from '../data/serials/lookup';
 import { WATCH_HISTORY } from '../data/history';
 import { BRAND_GUIDES } from '../data/brandGuides';
 import SeikoYearFinder from '../components/SeikoYearFinder';
 import KoreanYearNews from '../components/KoreanYearNews';
 import PageHero from '../components/PageHero';
+import SubscribeShare from '../components/SubscribeShare';
 
 type LookupResult = {
   year: string;
@@ -40,7 +36,6 @@ export default function YearFinder() {
   const [res, setRes] = useState<LookupResult | null>(null);
   const [err, setErr] = useState('');
   const resultRef = useRef<HTMLDivElement>(null);
-  const { handleShare, shareMessage } = useShare('Year Finder', '빈티지 시계 생산년도를 확인해보세요!');
 
   const selectBrand = (b: string) => {
     setBrand(b);
@@ -52,37 +47,13 @@ export default function YearFinder() {
   const lookup = () => {
     setErr('');
     setRes(null);
-    const sn = serial.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    const sn = normalizeSerial(serial);
     if (!sn) {
       setErr('유효한 시리얼 번호를 입력해주세요.');
       return;
     }
 
-    let yearText = '';
-    if (brand === 'Omega') {
-      const n = parseInt(sn);
-      const m = [...OMEGA_SERIALS].reverse().find((i) => n >= i.serial);
-      if (m) yearText = `${m.year}년`;
-    } else if (brand === 'Rolex') {
-      if (sn.startsWith('R')) yearText = '1987년';
-      else {
-        const n = parseInt(sn);
-        const m = ROLEX_SERIALS.find((i) => i.serialStart != null && i.serialEnd != null && n >= i.serialStart && n <= i.serialEnd);
-        if (m) yearText = `${m.year}년`;
-      }
-    } else if (brand === 'IWC') {
-      const n = parseInt(sn);
-      const foundMatch = IWC_SERIALS.find((i) => i.serialStart != null && i.serialEnd != null && n >= i.serialStart && n <= i.serialEnd);
-      if (foundMatch) yearText = `${foundMatch.year}년`;
-    } else if (brand === 'Longines') {
-      const n = parseInt(sn);
-      const m = LONGINES_SERIALS.find((i) => i.serialStart != null && i.serialEnd != null && n >= i.serialStart && n <= i.serialEnd);
-      if (m) yearText = `${m.year}년`;
-    } else if (brand === 'UniversalGenève') {
-      const n = parseInt(sn);
-      const m = UG_SERIALS.find((i) => i.serialStart != null && i.serialEnd != null && n >= i.serialStart && n <= i.serialEnd);
-      if (m) yearText = `${m.year}년`;
-    }
+    const yearText = lookupYear(brand, sn);
 
     if (yearText) {
       const yr = parseInt(yearText);
@@ -197,25 +168,12 @@ export default function YearFinder() {
                     <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{blk.answer}</p>
                   </div>
                 ))}
-                <img
-                  src={currentGuide.imageUrl}
-                  alt={`${displayName(brand)} 가이드`}
-                  className="max-w-full h-auto rounded-lg mt-2"
-                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                />
               </div>
             </div>
           )}
         </div>
 
-        <section className="p-8 text-center">
-          <p className="text-gray-700 text-lg mb-6">구독과 공유는 콘텐츠 제작에 큰 힘이 됩니다.</p>
-          <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-4 mb-6">
-            <a href="https://www.youtube.com/@seemoung?sub_confirmation=1" target="_blank" rel="noreferrer" className="bg-gray-800 hover:bg-gray-700 text-gray-100 font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out text-base sm:text-lg w-full sm:w-auto">YouTube 채널 구독하기</a>
-            <button onClick={() => handleShare()} className="bg-gray-800 hover:bg-gray-700 text-gray-100 font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out text-base sm:text-lg w-full sm:w-auto">다른 시계 덕후에게 공유하기</button>
-          </div>
-          {shareMessage && <div className="mt-4 text-blue-600 text-sm">{shareMessage}</div>}
-        </section>
+        <SubscribeShare shareTitle="Year Finder" shareText="빈티지 시계 생산년도를 확인해보세요!" />
       </main>
     </>
   );

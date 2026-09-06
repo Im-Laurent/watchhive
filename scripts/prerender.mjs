@@ -10,8 +10,8 @@
  * PageHead가 런타임에 붙이는 태그와 어긋나지 않는다.
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
@@ -28,8 +28,15 @@ const { site: SITE, pages: PAGE_META } = JSON.parse(
 const esc = (s) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-/** PageHead.tsx가 렌더하는 것과 같은 태그 묶음 */
-function metaBlock(meta) {
+/**
+ * PageHead.tsx가 렌더하는 것과 같은 태그 묶음.
+ *
+ * 두 곳이 같은 태그를 따로 만든다 — 크롤러는 JS를 실행하지 않아 정적 HTML이 필요하고,
+ * 앱은 라우트를 옮길 때 런타임에 태그를 갈아야 하기 때문이다. 어긋나면 링크 미리보기와
+ * 검색 결과가 서로 다른 말을 하게 되므로, 둘이 같은 태그를 내는지 테스트로 묶어 뒀다
+ * (src/components/__tests__/prerenderParity.test.tsx). 그래서 export 한다.
+ */
+export function metaBlock(meta) {
   const fullTitle = meta.title === 'Watch HIVE' ? meta.title : `${meta.title} · Watch HIVE`;
   const url = `${SITE}${meta.path}`;
   const image = `${SITE}${meta.image}`;
@@ -55,18 +62,25 @@ function metaBlock(meta) {
     .join('\n');
 }
 
-const shell = readFileSync(join(DIST, 'index.html'), 'utf8');
-const from = shell.indexOf(START);
-const to = shell.indexOf(END);
-if (from === -1 || to === -1) {
-  throw new Error(`index.html에서 ${START} … ${END} 마커를 찾지 못했습니다.`);
+function main() {
+  const shell = readFileSync(join(DIST, 'index.html'), 'utf8');
+  const from = shell.indexOf(START);
+  const to = shell.indexOf(END);
+  if (from === -1 || to === -1) {
+    throw new Error(`index.html에서 ${START} … ${END} 마커를 찾지 못했습니다.`);
+  }
+
+  for (const meta of Object.values(PAGE_META)) {
+    const html = `${shell.slice(0, from + START.length)}\n${metaBlock(meta)}\n    ${shell.slice(to)}`;
+    // '/' 는 dist/index.html 자신, 나머지는 dist/<route>/index.html (GitHub Pages가 디렉터리 인덱스로 서빙)
+    const outDir = meta.path === '/' ? DIST : join(DIST, meta.path.replace(/^\//, ''));
+    mkdirSync(outDir, { recursive: true });
+    writeFileSync(join(outDir, 'index.html'), html, 'utf8');
+    console.log(`prerendered ${meta.path.padEnd(14)} → ${join(outDir, 'index.html').slice(DIST.length + 1)}`);
+  }
 }
 
-for (const meta of Object.values(PAGE_META)) {
-  const html = `${shell.slice(0, from + START.length)}\n${metaBlock(meta)}\n    ${shell.slice(to)}`;
-  // '/' 는 dist/index.html 자신, 나머지는 dist/<route>/index.html (GitHub Pages가 디렉터리 인덱스로 서빙)
-  const outDir = meta.path === '/' ? DIST : join(DIST, meta.path.replace(/^\//, ''));
-  mkdirSync(outDir, { recursive: true });
-  writeFileSync(join(outDir, 'index.html'), html, 'utf8');
-  console.log(`prerendered ${meta.path.padEnd(14)} → ${join(outDir, 'index.html').slice(DIST.length + 1)}`);
+// 빌드에서 직접 실행할 때만 파일을 굽는다. 테스트가 metaBlock 만 가져다 쓸 수 있도록 나눠 뒀다.
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+  main();
 }

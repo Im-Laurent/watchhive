@@ -1,3 +1,5 @@
+import { isPlausibleInterval, mean, median, sortedIntervals } from './stats';
+
 export type BeatErrorEstimate = {
   ms: number | null;
   sampleCount: number;
@@ -23,12 +25,6 @@ const MIN_GROUP_SAMPLES = 8;
  */
 const MAX_CLEAN_DROP_RATIO = 0.4;
 
-function median(values: number[]): number {
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
-}
-
 /**
  * tick을 짝수/홀수로 교대 분리해 두 그룹의 평균 간격 차이를 beat error(ms)로 계산한다.
  * 놓친 tick이나 오검출로 생긴 이상치 간격이 하나라도 섞이면 그 뒤로 짝/홀 정렬이 통째로
@@ -41,18 +37,13 @@ export function calculateBeatError(peakTimestamps: number[]): BeatErrorEstimate 
     return { ms: null, sampleCount: 0, droppedRatio: null, confidence: 'low' };
   }
 
-  const sorted = [...peakTimestamps].sort((a, b) => a - b);
-  const intervals: number[] = [];
-  for (let i = 1; i < sorted.length; i++) {
-    intervals.push(sorted[i] - sorted[i - 1]);
-  }
-
+  const { intervals } = sortedIntervals(peakTimestamps);
   const roughMedian = median(intervals);
   const groups: [number[], number[]] = [[], []];
   let parity: 0 | 1 = 0;
   let dropped = 0;
   for (const interval of intervals) {
-    if (interval < roughMedian * 0.6 || interval > roughMedian * 1.6) {
+    if (!isPlausibleInterval(interval, roughMedian)) {
       dropped++;
       continue; // 이상치는 버리고, 짝/홀 순서를 깨지 않은 채 다음 간격으로 넘어간다
     }
@@ -65,8 +56,7 @@ export function calculateBeatError(peakTimestamps: number[]): BeatErrorEstimate 
     return { ms: null, sampleCount: 0, droppedRatio, confidence: 'low' };
   }
 
-  const avg = (arr: number[]) => arr.reduce((sum, v) => sum + v, 0) / arr.length;
-  const beatErrorMs = Math.abs(avg(groups[0]) - avg(groups[1])) * 1000;
+  const beatErrorMs = Math.abs(mean(groups[0]) - mean(groups[1])) * 1000;
 
   return {
     ms: beatErrorMs,

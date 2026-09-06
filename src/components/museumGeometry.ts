@@ -29,3 +29,8 @@ export function isSwipe(x0: number, y0: number, x1: number, y1: number): -1 | 0 
   if (Math.abs(dx) <= 45 || Math.abs(dx) <= Math.abs(dy) * 1.4) return 0;
   return dx < 0 ? 1 : -1;
 }
+
+/** 사진 번호를 목록 안으로 되말아 준다. 마지막에서 다음은 처음, 처음에서 이전은 마지막. */
+export function wrapIndex(n: number, length: number): number {
+  return ((n % length) + length) % length;
+}

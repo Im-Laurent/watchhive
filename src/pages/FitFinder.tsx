@@ -1,12 +1,11 @@
 import { useState, useRef } from 'react';
 import PageHead from '../components/PageHead';
 import { PAGE_META } from '../data/pageMeta';
-import { useShare } from '../hooks/useShare';
-import { SIZE_CHART } from '../data/sizeChart';
 import PageHero from '../components/PageHero';
+import SubscribeShare from '../components/SubscribeShare';
+import { computeFit, MAX_WRIST, MIN_WRIST, type FitRecommendation, type WatchType } from '../data/fitSizing';
 
-type WatchType = 'dress-watch' | 'tool-watch' | 'generous-fit';
-type Result = { recCase: string; recLug: string; caseMax: number; wrist: number; type: WatchType };
+type Result = FitRecommendation & { wrist: number; type: WatchType };
 
 const WATCH_TYPES: { value: WatchType; title: string; desc: string }[] = [
   { value: 'dress-watch', title: '드레스 워치', desc: '손목에 아름답게 감기는 클래식한 비율' },
@@ -19,44 +18,22 @@ const TYPE_LABEL: Record<WatchType, string> = {
   'generous-fit': '빅 사이즈',
 };
 
-const MIN_WRIST = 40;
-const MAX_WRIST = 65;
+const DEFAULT_WRIST = 55;
 
-function compute(type: WatchType, value: number): Omit<Result, 'type' | 'wrist'> {
-  if (type === 'dress-watch') {
-    return {
-      recCase: `${(value * 0.6).toFixed(1)}mm ~ ${(value * 0.7).toFixed(1)}mm`,
-      recLug: `${(value * 0.85).toFixed(1)}mm`,
-      caseMax: value * 0.7,
-    };
-  }
-  if (type === 'generous-fit') {
-    return {
-      recCase: `${(value * 0.75).toFixed(1)}mm ~ ${(value * 0.8).toFixed(1)}mm`,
-      recLug: `${(value * 0.9).toFixed(1)}mm`,
-      caseMax: value * 0.8,
-    };
-  }
-  const data = SIZE_CHART.find((r) => r.crossSection === Math.round(value)) || SIZE_CHART[0];
-  const maxC = parseFloat(data.caseSizes[1]);
-  return {
-    recCase: `${(maxC - 2).toFixed(1)}mm ~ ${maxC.toFixed(1)}mm`,
-    recLug: `${(parseFloat(data.maxLugToLug) - 1).toFixed(1)}mm`,
-    caseMax: maxC,
-  };
-}
+const clamp = (v: number) => Math.max(MIN_WRIST, Math.min(MAX_WRIST, v));
 
 export default function FitFinder() {
   const [watchType, setWatchType] = useState<WatchType>('dress-watch');
-  const [wrist, setWrist] = useState(55);
+  const [wrist, setWrist] = useState(DEFAULT_WRIST);
+  // 입력칸에 보이는 글자는 확정값과 따로 둔다. 한 글자마다 40~65 로 붙이면 칸을 비우고
+  // "50" 을 칠 때 5 → 40 → "400" → 65 로 끝나서 두 자리 수를 손으로 넣을 수 없었다.
+  // 치는 동안에는 글자를 그대로 두고, 온전한 값이 되면 그때 확정한다.
+  const [wristText, setWristText] = useState(String(DEFAULT_WRIST));
   const [result, setResult] = useState<Result | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
-  const { handleShare, shareMessage } = useShare('Fit Finder', '나에게 맞는 시계 사이즈를 찾아보세요!');
-
-  const clamp = (v: number) => Math.max(MIN_WRIST, Math.min(MAX_WRIST, v));
 
   const runCalc = (type: WatchType, value: number, scroll = false) => {
-    const c = compute(type, value);
+    const c = computeFit(type, value);
     setResult({ ...c, type, wrist: value });
     if (scroll) setTimeout(() => resultRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
   };
@@ -66,10 +43,32 @@ export default function FitFinder() {
     if (result) runCalc(type, wrist);
   };
 
+  /** 확정값을 바꾸고, 이미 결과가 떠 있으면 함께 갱신한다. */
+  const commitWrist = (value: number) => {
+    setWrist(value);
+    setWristText(String(value));
+    if (result) runCalc(watchType, value);
+  };
+
+  /** 슬라이더는 언제나 범위 안의 값만 주므로 그대로 확정한다. */
   const changeWrist = (value: number) => {
-    const v = clamp(value);
-    setWrist(v);
-    if (result) runCalc(watchType, v);
+    if (Number.isFinite(value)) commitWrist(clamp(value));
+  };
+
+  /** 직접 입력칸: 치는 도중에는 글자만 두고, 범위 안의 값이 되면 확정한다. */
+  const typeWrist = (text: string) => {
+    setWristText(text);
+    const parsed = Number.parseInt(text, 10);
+    if (Number.isFinite(parsed) && parsed >= MIN_WRIST && parsed <= MAX_WRIST) {
+      setWrist(parsed);
+      if (result) runCalc(watchType, parsed);
+    }
+  };
+
+  /** 칸을 벗어날 때 비었거나 범위 밖이면 그때 정리한다 — 치는 중에 끼어들지 않는다. */
+  const settleWrist = () => {
+    const parsed = Number.parseInt(wristText, 10);
+    commitWrist(Number.isFinite(parsed) ? clamp(parsed) : wrist);
   };
 
   // wrist diagram geometry
@@ -140,7 +139,7 @@ export default function FitFinder() {
               max={MAX_WRIST}
               step={1}
               value={wrist}
-              onChange={(e) => changeWrist(parseInt(e.target.value))}
+              onChange={(e) => changeWrist(Number.parseInt(e.target.value, 10))}
               className="fit-slider w-full mb-4"
             />
             <div className="flex items-center gap-2 justify-center">
@@ -149,8 +148,9 @@ export default function FitFinder() {
                 type="number"
                 min={MIN_WRIST}
                 max={MAX_WRIST}
-                value={wrist}
-                onChange={(e) => changeWrist(parseInt(e.target.value))}
+                value={wristText}
+                onChange={(e) => typeWrist(e.target.value)}
+                onBlur={settleWrist}
                 className="w-24 text-center border rounded-lg py-2 px-3 text-base"
               />
               <span className="text-sm text-gray-500">mm</span>
@@ -235,14 +235,7 @@ export default function FitFinder() {
           </div>
         </div>
 
-        <section className="p-8 text-center">
-          <p className="text-gray-700 text-lg mb-6">구독과 공유는 콘텐츠 제작에 큰 힘이 됩니다.</p>
-          <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-4">
-            <a href="https://www.youtube.com/@seemoung?sub_confirmation=1" target="_blank" rel="noreferrer" className="bg-gray-800 hover:bg-gray-700 text-gray-100 font-bold py-3 px-6 rounded-full shadow-md transition">YouTube 채널 구독하기</a>
-            <button onClick={() => handleShare()} className="bg-gray-800 hover:bg-gray-700 text-gray-100 font-bold py-3 px-6 rounded-full shadow-md transition">다른 시계 덕후에게 공유하기</button>
-          </div>
-          {shareMessage && <div className="mt-4 text-blue-600 text-sm">{shareMessage}</div>}
-        </section>
+        <SubscribeShare shareTitle="Fit Finder" shareText="나에게 맞는 시계 사이즈를 찾아보세요!" />
       </main>
     </>
   );

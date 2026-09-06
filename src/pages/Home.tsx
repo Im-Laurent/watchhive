@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import PageHead from '../components/PageHead';
 import { PAGE_META } from '../data/pageMeta';
 import { useShare } from '../hooks/useShare';
@@ -12,7 +12,6 @@ const SERVICES = [
 ];
 
 export default function Home() {
-  const navigate = useNavigate();
   const { handleShare, shareMessage } = useShare();
   const featured = FEATURED_VIDEO;
 
@@ -35,22 +34,27 @@ export default function Home() {
               구간이 있어 최소 높이를 함께 둔다. 카드가 4개라 3단으로 두면 마지막 한 장만
               다음 줄에 남으므로, 2단(md·lg) → 4단(xl)으로 항상 줄이 꽉 차게 한다. */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+            {/* 카드 전체가 하나의 링크다. 예전에는 div 의 onClick 이었는데, 그러면 탭으로 닿지도
+                않고 Enter 로 열 수도 없었다. 게다가 그 안에 <button> 이 들어 있어 "누를 수 있는 것
+                안에 누를 수 있는 것"이 겹쳐 있었다. Link 로 바꾸면 키보드·새 탭으로 열기·크롤러가
+                모두 그냥 따라온다. */}
             {SERVICES.map((s) => (
-              <div
+              <Link
                 key={s.to}
-                onClick={() => navigate(s.to)}
-                className="bg-gray-800 rounded-lg shadow-lg flex flex-col items-center text-center cursor-pointer hover:bg-gray-700 transition duration-300 relative w-full aspect-[4/3] min-h-[16rem] group overflow-hidden"
+                to={s.to}
+                className="bg-gray-800 rounded-lg shadow-lg flex flex-col items-center text-center hover:bg-gray-700 transition duration-300 relative w-full aspect-[4/3] min-h-[16rem] group overflow-hidden"
               >
                 <div className="absolute inset-0 w-full h-full" style={{ backgroundImage: `url(${s.img})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.3 }}></div>
                 <div className="relative z-10 flex flex-col items-center justify-center h-full w-full p-8">
                   <h4 className="text-3xl font-bold text-white mb-3 group-hover:scale-105 transition-transform duration-300">{s.title}</h4>
                   <p className="text-lg text-gray-200 mb-8 opacity-90">{s.desc}</p>
-                  <button className="bg-white text-gray-900 font-bold py-2.5 px-6 rounded-full shadow-md hover:bg-gray-200 transition-colors duration-200 flex items-center">
+                  {/* 카드가 곧 링크라 이건 눌리는 요소가 아니라 눌러 보이는 표시다. */}
+                  <span className="bg-white text-gray-900 font-bold py-2.5 px-6 rounded-full shadow-md group-hover:bg-gray-200 transition-colors duration-200 flex items-center">
                     바로가기
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="ml-2"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
-                  </button>
+                  </span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </section>

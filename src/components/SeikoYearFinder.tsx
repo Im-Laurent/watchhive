@@ -1,81 +1,32 @@
 import { useState, useRef } from 'react';
-import { SEIKO_CALIBERS, type SeikoCaliberRange } from '../data/seikoCalibers';
+import { caliberSpan, decodeSeikoSerial, type SeikoDecodeError, type SeikoResult } from '../data/serials/seikoLookup';
+import { normalizeSerial } from '../data/serials/lookup';
 import KoreanYearNews from './KoreanYearNews';
 
-const MONTHS: Record<number, string> = {
-  1: '1월', 2: '2월', 3: '3월', 4: '4월', 5: '5월', 6: '6월',
-  7: '7월', 8: '8월', 9: '9월', 10: '10월', 11: '11월', 12: '12월',
+/** 해독에 실패한 자리마다 무엇을 고쳐야 하는지 알려준다. */
+const DECODE_ERROR_MESSAGE: Record<SeikoDecodeError, string> = {
+  length: '세이코 시리얼은 보통 6~7자리입니다. 케이스백 번호를 다시 확인해 주세요.',
+  year: '첫 자리는 연도 끝자리(숫자)여야 합니다.',
+  month: '둘째 자리는 월(1~9, 또는 O·N·D)이어야 합니다.',
 };
-
-function decodeMonth(ch: string): { n: number; label: string } | null {
-  if (ch >= '1' && ch <= '9') return { n: +ch, label: MONTHS[+ch] };
-  if (ch === 'O') return { n: 10, label: '10월' };
-  if (ch === 'N') return { n: 11, label: '11월' };
-  if (ch === 'D') return { n: 12, label: '12월' };
-  return null;
-}
-
-const spanTxt = (r: SeikoCaliberRange) => `${r[0]}${r[1] ? '~' + r[1] : '~현재'}`;
-
-type SeikoResult =
-  | { kind: 'single'; year: number; monthLabel: string; prod: string; caliber: string; range: SeikoCaliberRange }
-  | {
-      kind: 'multi';
-      monthLabel: string;
-      lastDigit: number;
-      prod: string;
-      candidates: number[];
-      reasonKind: 'noCal' | 'notFound' | 'wide';
-      caliber: string;
-      range?: SeikoCaliberRange;
-    };
 
 export default function SeikoYearFinder() {
   const [serial, setSerial] = useState('');
   const [caliber, setCaliber] = useState('');
-  const [res, setRes] = useState<SeikoResult | null>(null);
+  // 해독 실패는 err 로 따로 보여주므로, 결과 자리에는 성공한 두 갈래만 담는다.
+  const [res, setRes] = useState<Extract<SeikoResult, { kind: 'single' | 'multi' }> | null>(null);
   const [err, setErr] = useState('');
   const resultRef = useRef<HTMLDivElement>(null);
 
   const lookup = () => {
     setErr('');
     setRes(null);
-    const raw = serial.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-    const cal = caliber.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-    if (raw.length < 6 || raw.length > 7) {
-      setErr('세이코 시리얼은 보통 6~7자리입니다. 케이스백 번호를 다시 확인해 주세요.');
+    const result = decodeSeikoSerial(normalizeSerial(serial), normalizeSerial(caliber));
+    if (result.kind === 'error') {
+      setErr(DECODE_ERROR_MESSAGE[result.error]);
       return;
     }
-    const yChar = raw[0];
-    if (yChar < '0' || yChar > '9') {
-      setErr('첫 자리는 연도 끝자리(숫자)여야 합니다.');
-      return;
-    }
-    const m = decodeMonth(raw[1]);
-    if (!m) {
-      setErr('둘째 자리는 월(1~9, 또는 O·N·D)이어야 합니다.');
-      return;
-    }
-    const lastDigit = +yChar;
-    const prod = raw.slice(2);
-    const calKnown = cal.length > 0;
-    const range = calKnown ? SEIKO_CALIBERS[cal] : undefined;
-    const calFound = !!range;
-
-    const lo = 1966, hi = 2026;
-    let cands: number[] = [];
-    for (let y = lo; y <= hi; y++) if (y % 10 === lastDigit) cands.push(y);
-    if (calFound && range) {
-      const s = range[0], e = range[1] == null ? hi : range[1];
-      cands = cands.filter((y) => y >= s && y <= e);
-    }
-
-    if (calFound && range && cands.length === 1) {
-      setRes({ kind: 'single', year: cands[0], monthLabel: m.label, prod, caliber: cal, range });
-    } else {
-      const reasonKind: 'noCal' | 'notFound' | 'wide' = !calKnown ? 'noCal' : !calFound ? 'notFound' : 'wide';
-      setRes({ kind: 'multi', monthLabel: m.label, lastDigit, prod, candidates: cands, reasonKind, caliber: cal, range });
-    }
+    setRes(result);
     setTimeout(() => resultRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
   };
 
@@ -136,7 +87,7 @@ export default function SeikoYearFinder() {
             <div className="rounded-2xl border border-green-200 bg-green-50 p-6 text-center">
               <p className="text-sm text-gray-500 mb-1">생산년도 <span className="text-green-600">(추정)</span></p>
               <p className="text-5xl font-bold text-green-700 mb-1">{res.year}년</p>
-              <p className="text-sm text-gray-600">{res.monthLabel} 생산 · 칼리버 {res.caliber} ({spanTxt(res.range)})로 확정</p>
+              <p className="text-sm text-gray-600">{res.monthLabel} 생산 · 칼리버 {res.caliber} ({caliberSpan(res.range)})로 확정</p>
               <p className="text-xs text-gray-400 mt-1">그 달의 생산 일련번호: {res.prod}</p>
             </div>
             <KoreanYearNews year={res.year} />
@@ -170,7 +121,7 @@ export default function SeikoYearFinder() {
                   <>입력한 칼리버 <b>{res.caliber}</b>는 아직 연도 자료가 없어요. 시리얼만으로 후보를 표시합니다.</>
                 )}
                 {res.reasonKind === 'wide' && res.range && (
-                  <>칼리버 <b>{res.caliber}</b>가 10년 이상 생산돼({spanTxt(res.range)}) 후보가 여러 개입니다. 모델·디자인으로 좁혀 보세요.</>
+                  <>칼리버 <b>{res.caliber}</b>가 10년 이상 생산돼({caliberSpan(res.range)}) 후보가 여러 개입니다. 모델·디자인으로 좁혀 보세요.</>
                 )}
               </div>
             </div>

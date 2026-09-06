@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import type { MuseumPiece } from '../data/types';
 import MuseumPager from './MuseumPager';
 import MuseumPlate from './MuseumPlate';
-import { drawnRect, isSwipe } from './museumGeometry';
+import { drawnRect, isSwipe, wrapIndex } from './museumGeometry';
 
 const LOUPE_Z = 2.6;   // 루페 배율
 const LOUPE_R = 95;    // 루페 반지름(px)
@@ -31,10 +31,7 @@ export default function MuseumFrame({ piece, onOpen }: Props) {
   const shot = shots[index] ?? shots[0];
   const full = shots[0];
 
-  const go = useCallback(
-    (n: number) => setIndex(((n % shots.length) + shots.length) % shots.length),
-    [shots.length],
-  );
+  const go = useCallback((n: number) => setIndex(wrapIndex(n, shots.length)), [shots.length]);
 
   /** 나머지 사진은 손이 닿을 때 받아 둔다. 처음부터 다 받으면 지연 로딩이 무의미해진다. */
   const warm = () => {
