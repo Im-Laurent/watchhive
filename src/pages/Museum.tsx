@@ -70,9 +70,8 @@ export default function Museum() {
           <h1 className="wh-mu__title">
             이 광활한 우주에서
             <br />
-            마지막 남은 한 점
+            유일한 것을 감상한다는 것
           </h1>
-          <p className="wh-mu__sub">예술품 간의 만남</p>
         </header>
 
         {pieces.map((piece) => (

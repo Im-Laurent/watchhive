@@ -39,22 +39,13 @@
 .wh-mu__title {
   font-family: 'Noto Serif KR', serif;
   font-weight: 400;
-  font-size: clamp(29px, 5.2vw, 58px);
+  font-size: clamp(26px, 5.2vw, 58px);
   letter-spacing: 0.04em;
   line-height: 1.55;
-  margin: 0 0 26px;
+  margin: 0;
   color: #f2ead8;
   text-wrap: balance;
 }
-.wh-mu__sub {
-  font-family: 'Noto Serif KR', serif;
-  font-size: clamp(13px, 1.8vw, 18px);
-  color: #a89e8d;
-  letter-spacing: 0.34em;
-  text-indent: 0.34em;
-  margin: 0;
-}
-
 /* ── 한 점이 걸린 자리 ────────────────────────────────── */
 .wh-mu__bay { position: relative; padding: 7vh 24px 8vh; display: flex; justify-content: center; }
 .wh-mu__inner {
