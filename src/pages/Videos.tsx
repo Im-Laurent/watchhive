@@ -15,7 +15,7 @@ export default function Videos() {
         title="Videos"
         subtitle="빈티지 시계 리뷰와 시계 헌팅 영상"
         imgBase="videos_hero"
-        alt="베이지색 바탕에 나란히 놓인 가죽 시계 스트랩 여러 개"
+        alt="핸드메이드 종이에 인화한 가죽 시계 스트랩 사진"
       />
       <main className="container mx-auto mt-8 px-6 md:px-12 py-8">
         <section>

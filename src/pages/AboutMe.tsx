@@ -11,13 +11,11 @@ export default function AboutMe() {
   return (
     <>
       <PageHead {...PAGE_META.aboutMe} />
-      {/* 원본이 2048px 이라 확대 없이 만들 수 있는 판이 여기까지다 */}
       <PageHero
         title="About Me"
         subtitle="&ldquo;조금 느릴 수 있지만, 꾸준하게 더 많은 시계 정보와 영상을 전달하는 채널이 되고 싶어요.&rdquo;"
         imgBase="about_me_hero"
-        alt="어두운 석판 위에 나란히 놓인 빈티지 시계 일곱 점"
-        widths={[800, 1400, 2048]}
+        alt="짙은 판 위에 손으로 찢어 겹쳐 놓은 핸드메이드 종이"
       />
       <main className="container mx-auto mt-8 px-0 md:px-0 py-8">
         <section className="mb-12 text-center max-w-4xl mx-auto px-6 md:px-12">

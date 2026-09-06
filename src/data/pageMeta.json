@@ -43,14 +43,14 @@
       "description": "빈시멍 유튜브 채널의 최신 영상. 빈티지 시계 리뷰와 시계 헌팅 영상 모음.",
       "path": "/videos",
       "image": "/images/og/videos.jpg",
-      "imageAlt": "베이지색 바탕에 나란히 놓인 가죽 시계 스트랩 여러 개"
+      "imageAlt": "핸드메이드 종이에 인화한 가죽 시계 스트랩 사진"
     },
     "aboutMe": {
       "title": "About Me",
       "description": "시계 애호가 빈시멍 소개. Watch HIVE를 만든 이유와 함께 나누고 싶은 이야기.",
       "path": "/about-me",
       "image": "/images/og/about-me.jpg",
-      "imageAlt": "어두운 석판 위에 나란히 놓인 빈티지 시계 일곱 점"
+      "imageAlt": "짙은 판 위에 손으로 찢어 겹쳐 놓은 핸드메이드 종이"
     }
   }
 }
