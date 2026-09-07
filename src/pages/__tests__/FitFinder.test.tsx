@@ -158,3 +158,67 @@ describe('FitFinder — 추천 결과', () => {
     expect(recommendation('36.0mm ~ 42.0mm')).toBeInTheDocument();
   });
 });
+
+describe('FitFinder — 손목 대비 케이스 그림', () => {
+  /** 결과를 띄우고 SVG 의 기하를 읽어 온다. */
+  function diagram(type?: RegExp, wrist?: number) {
+    renderPage();
+    if (type) fireEvent.click(screen.getByRole('button', { name: type }));
+    if (wrist != null) fireEvent.change(screen.getByRole('slider'), { target: { value: String(wrist) } });
+    fireEvent.click(screen.getByRole('button', { name: '추천 사이즈 확인' }));
+
+    const svg = document.querySelector('svg[viewBox]') as SVGSVGElement;
+    const [, , viewW, viewH] = svg.getAttribute('viewBox')!.split(' ').map(Number);
+    const circle = svg.querySelector('circle')!;
+    const cy = Number(circle.getAttribute('cy'));
+    const r = Number(circle.getAttribute('r'));
+    const texts = [...svg.querySelectorAll('text')].map((t) => ({
+      y: Number(t.getAttribute('y')),
+      text: t.textContent ?? '',
+    }));
+    return { viewW, viewH, cy, r, texts, svg };
+  }
+
+  it('원이 viewBox 안에 온전히 들어간다 — 예전에는 아래가 잘려 반원처럼 보였다', () => {
+    const d = diagram();
+    expect(d.cy - d.r).toBeGreaterThanOrEqual(0);
+    expect(d.cy + d.r).toBeLessThanOrEqual(d.viewH);
+  });
+
+  it('글자가 원에 가리지 않는다 — 예전에는 "손목 단면" 이 통째로 덮였다', () => {
+    const d = diagram();
+    const top = d.cy - d.r;
+    const bottom = d.cy + d.r;
+    d.texts.forEach((t) => {
+      expect(t.y < top || t.y > bottom).toBe(true);
+    });
+  });
+
+  it('글자를 원보다 나중에 그린다 — SVG 는 나중에 그린 것이 위로 온다', () => {
+    const d = diagram();
+    const kinds = [...d.svg.children].map((el) => el.tagName.toLowerCase());
+    expect(kinds.lastIndexOf('circle')).toBeLessThan(kinds.indexOf('text'));
+  });
+
+  it.each([
+    [/드레스 워치/, 40], [/드레스 워치/, 55], [/드레스 워치/, 65],
+    [/툴 워치/, 40], [/툴 워치/, 55], [/툴 워치/, 65],
+    [/빅 사이즈/, 40], [/빅 사이즈/, 55], [/빅 사이즈/, 65],
+  ])('%s · 손목 %imm 에서도 잘리거나 겹치지 않는다', (type, wrist) => {
+    const d = diagram(type, wrist);
+    expect(d.cy - d.r).toBeGreaterThanOrEqual(0);
+    expect(d.cy + d.r).toBeLessThanOrEqual(d.viewH);
+    d.texts.forEach((t) => expect(t.y < d.cy - d.r || t.y > d.cy + d.r).toBe(true));
+  });
+
+  it('두 글자가 각각 케이스와 손목을 가리킨다', () => {
+    const d = diagram(undefined, 55);
+    expect(d.texts.some((t) => t.text.includes('케이스'))).toBe(true);
+    expect(d.texts.some((t) => t.text.includes('손목 단면'))).toBe(true);
+  });
+
+  it('케이스가 손목보다 클 수 없다 — 원이 막대를 넘지 않는다', () => {
+    const d = diagram(/빅 사이즈/, 65);
+    expect(d.r * 2).toBeLessThanOrEqual(260);
+  });
+});

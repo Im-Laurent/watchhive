@@ -22,6 +22,28 @@ const DEFAULT_WRIST = 55;
 
 const clamp = (v: number) => Math.max(MIN_WRIST, Math.min(MAX_WRIST, v));
 
+/**
+ * 손목 단면(막대)과 추천 케이스(원)의 폭을 나란히 놓고 비교하는 그림.
+ *
+ * 막대 폭이 손목 너비, 원 지름이 케이스 크기다 — 그래서 비율이 1에 가까울수록 원이 막대만큼
+ * 커진다. 예전에는 viewBox 높이가 150 뿐이라 지름 182짜리 원(70%)이 아래로 잘려 반원처럼
+ * 보였고, 원을 글자보다 나중에 그려서 "손목 단면 55mm" 를 통째로 덮었다.
+ * 비율이 최대(1.0)여도 원이 온전히 들어가도록 높이를 잡고, 글자는 원 바깥 위아래에 둔다.
+ */
+const BAR_LEFT = 30;
+const BAR_W = 260;
+const BAR_H = 26;
+const VIEW_W = 320;
+const CX = VIEW_W / 2;
+/** 비율 1.0 일 때의 반지름 — 원이 막대와 같은 폭이 된다 */
+const MAX_R = BAR_W / 2;
+/** 원과 글자 사이에 남겨 둘 여백 */
+const LABEL_GAP = 22;
+const CENTER_Y = LABEL_GAP + MAX_R;
+const VIEW_H = CENTER_Y + MAX_R + LABEL_GAP;
+const CASE_LABEL_Y = 16;
+const WRIST_LABEL_Y = VIEW_H - 6;
+
 export default function FitFinder() {
   const [watchType, setWatchType] = useState<WatchType>('dress-watch');
   const [wrist, setWrist] = useState(DEFAULT_WRIST);
@@ -71,15 +93,9 @@ export default function FitFinder() {
     commitWrist(Number.isFinite(parsed) ? clamp(parsed) : wrist);
   };
 
-  // wrist diagram geometry
-  const barLeft = 30;
-  const barRight = 290;
-  const barW = barRight - barLeft;
-  const barY = 95;
-  const barH = 26;
+  // 케이스가 손목보다 클 수는 없으므로 1 에서 자른다 — 원이 막대를 넘어서면 비교가 깨진다.
   const ratio = result ? Math.min(1, result.caseMax / result.wrist) : 0;
-  const caseD = barW * ratio;
-  const cx = 160;
+  const caseR = (BAR_W * ratio) / 2;
   const pct = Math.round(ratio * 100);
 
   return (
@@ -176,15 +192,23 @@ export default function FitFinder() {
 
                 {/* Wrist diagram */}
                 <div className="flex flex-col items-center mb-6">
-                  <svg viewBox="0 0 320 150" className="w-full max-w-xs">
-                    <rect x={barLeft} y={barY} width={barW} height={barH} rx={13} fill="#d1d5db" />
-                    <text x={cx} y={barY + barH + 18} textAnchor="middle" fontSize="12" fill="#6b7280">
-                      손목 단면 {result.wrist}mm
-                    </text>
-                    <circle cx={cx} cy={barY + barH / 2} r={caseD / 2} fill="#3b82f6" fillOpacity="0.85" />
-                    <circle cx={cx} cy={barY + barH / 2} r={caseD / 2} fill="none" stroke="#1d4ed8" strokeWidth="2" />
-                    <text x={cx} y={barY - 14} textAnchor="middle" fontSize="13" fontWeight="700" fill="#1d4ed8">
+                  <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} className="w-full max-w-xs">
+                    <rect
+                      x={BAR_LEFT}
+                      y={CENTER_Y - BAR_H / 2}
+                      width={BAR_W}
+                      height={BAR_H}
+                      rx={BAR_H / 2}
+                      fill="#d1d5db"
+                    />
+                    <circle cx={CX} cy={CENTER_Y} r={caseR} fill="#3b82f6" fillOpacity="0.85" />
+                    <circle cx={CX} cy={CENTER_Y} r={caseR} fill="none" stroke="#1d4ed8" strokeWidth="2" />
+                    {/* 글자는 맨 나중에 — 앞서 그리면 원이 그 위를 덮는다 */}
+                    <text x={CX} y={CASE_LABEL_Y} textAnchor="middle" fontSize="13" fontWeight="700" fill="#1d4ed8">
                       케이스 {result.caseMax.toFixed(1)}mm · {pct}%
+                    </text>
+                    <text x={CX} y={WRIST_LABEL_Y} textAnchor="middle" fontSize="12" fill="#6b7280">
+                      손목 단면 {result.wrist}mm
                     </text>
                   </svg>
                   <p className="text-xs text-gray-400 mt-1">손목 단면 대비 추천 케이스 비율(최대값 기준)</p>
