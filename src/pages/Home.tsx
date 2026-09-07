@@ -18,16 +18,21 @@ export default function Home() {
   return (
     <>
       <PageHead {...PAGE_META.home} />
-      <main className="container mx-auto mt-0 px-0 md:px-0 py-0">
-        <section className="relative w-full min-h-[400px] md:min-h-[600px] flex items-center justify-center bg-gray-200">
-          <div className="absolute inset-0 bg-cover bg-center opacity-70" style={{ backgroundImage: 'url(/images/home_img.jpg)' }}></div>
-          <div className="relative z-10 text-center p-4">
-            <h1 className="text-5xl md:text-7xl font-bold text-gray-800 mb-4 tracking-tight">Watch HIVE</h1>
-            <p className="text-xl md:text-2xl text-gray-700 font-medium leading-relaxed">시계 사이즈와 생산년도 찾기</p>
-            <p className="text-lg md:text-xl text-gray-700 font-medium leading-relaxed mt-2">by 빈시멍</p>
-          </div>
-        </section>
+      {/* 명판은 다른 페이지(PageHero)와 마찬가지로 화면 폭을 꽉 채운다. 그래서 폭이 묶이는
+          container 밖, main 앞에 둔다 -- 안에 있을 때는 넓은 화면에서 명판만 가운데
+          토막으로 잘려 나머지 페이지와 어긋났다. 높이는 처음의 63%. */}
+      <section className="relative w-full min-h-[252px] md:min-h-[378px] flex items-center justify-center bg-gray-200 overflow-hidden">
+        {/* 세로로 넘치는 만큼은 위에서만 덜어낸다 -- 가운데(50%)로 두면 명판을 줄일 때마다
+            아래 시계들이 같이 잘려 나간다. 16:9 사진을 흔한 PC 폭에 얹었을 때 아래 끝이
+            그대로 남는 값이 54% 근처다. */}
+        <div className="absolute inset-0 bg-cover opacity-70" style={{ backgroundImage: 'url(/images/home_img.jpg)', backgroundPosition: 'center 54%' }}></div>
+        <div className="relative z-10 text-center p-4">
+          <h1 className="text-5xl md:text-7xl font-bold text-gray-800 mb-4 tracking-tight">Watch HIVE</h1>
+          <p className="text-lg md:text-xl text-gray-700 font-medium leading-relaxed">by 빈시멍</p>
+        </div>
+      </section>
 
+      <main className="container mx-auto mt-0 px-0 md:px-0 py-0">
         <section className="mb-12 px-6 md:px-12 mt-12">
           <h3 className="text-3xl font-bold text-gray-800 mb-8 text-center">제공 서비스</h3>
           {/* 카드는 가로로 긴 4:3. 폭이 좁아 4:3 높이로는 제목·설명이 안 들어가는
